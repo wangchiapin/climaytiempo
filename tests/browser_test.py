@@ -140,15 +140,14 @@ with sync_playwright() as p:
     check('Escuchar' not in zhonly and 'Listen' not in zhonly and 'Salir' not in zhonly, '純中文模式不該有西英文')
     pg.click('#bSet2'); pg.click('#sheet [data-k="phon"][data-v="off"]'); pg.click('#bClose')
     check('<rt>' not in pg.inner_html('#sPlay'), '不顯示拼音時不該有 rt')
-    # 排行榜視窗（網路被擋，應顯示連不上而不是壞掉）
-    pg.click('#bHome'); pg.click('#bBoard'); pg.wait_for_timeout(800)
-    pg.screenshot(path=str(OUT / '23_board_offline.png'))
-    check(pg.inner_text('#lbBody').strip() != '', '排行榜離線時要有說明文字')
+    pg.click('#bHome')
+    check('firebase' not in pg.content().lower(), '頁面不該再有 Firebase')
     # 靜音鈕、版權
     check(pg.locator('#hgMute').count() == 1 and pg.locator('#hgCopy').count() == 1, '要有靜音鈕和版權行')
+    check(pg.locator('#bBoard').count() == 0, '不該有排行榜按鈕')
     # 桌機寬度
     pg.set_viewport_size({'width': 1100, 'height': 800})
-    pg.click('#bClose'); pg.click('#bStart'); pg.wait_for_selector('#bGo')
+    pg.click('#bStart'); pg.wait_for_selector('#bGo')
     pg.screenshot(path=str(OUT / '30_desktop_play.png'), full_page=True)
     b.close()
 

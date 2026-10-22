@@ -505,8 +505,6 @@ function solve(scn){
 <!-- ============ 畫面與遊戲流程 ============ -->
 <script id="ui">
 'use strict';
-const BOARD = 'weatherOutfitBoard';
-const FB_CFG = { apiKey:'AIzaSyC_YSDn2OH6_GKKwCq0d8QFNl3fYXzTC60', authDomain:'memorma-24dab.firebaseapp.com', projectId:'memorma-24dab', appId:'1:806709458465:web:f0d12acb2f911f2f165560' };
 const ROUNDS = 10;
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -526,14 +524,13 @@ const UI = {
   l2d:['聽溫度和降雨機率','Escucha la temperatura y la probabilidad de lluvia','Hear the temperature and chance of rain'],
   l3d:['一天裡天氣會變','El clima cambia durante el día','The weather changes during the day'],
   nick:['暱稱','Apodo','Nickname'], nickph:['你的名字','Tu nombre','Your name'],
-  start:['開始','Empezar','Start'], board:['排行榜','Clasificación','Leaderboard'], settings:['設定','Ajustes','Settings'],
+  start:['開始','Empezar','Start'], bestLbl:['最高分','Mejor puntaje','Best score'], settings:['設定','Ajustes','Settings'],
   listen:['聽','Escuchar','Listen'], again:['再聽一次','Escuchar otra vez','Listen again'], peek:['看字','Ver texto','Show text'],
   go:['出門！','¡Salir!','Go out!'], retry:['再試一次','Intentar otra vez','Try again'], next:['下一題','Siguiente','Next'], finish:['看結果','Ver resultado','See result'],
   q:['第','Pregunta','Question'],
   tTop:['上衣','Arriba','Tops'], tOuter:['外套類','Abrigos','Outerwear'], tBottom:['下身','Abajo','Bottoms'], tShoes:['鞋子','Calzado','Shoes'], tAcc:['配件','Accesorios','Accessories'],
   done:['完成了！','¡Terminado!','Done!'], score:['分數','Puntos','Score'], again2:['再玩一次','Jugar otra vez','Play again'], home:['回首頁','Inicio','Home'],
-  saved:['已存到排行榜','Guardado en la clasificación','Saved to the leaderboard'], saveFail:['排行榜暫時連不上','No se pudo conectar con la clasificación','Could not reach the leaderboard'],
-  loading:['讀取中…','Cargando…','Loading…'], empty:['還沒有人上榜','Aún no hay nadie','Nobody yet'], top10:['前 10 名','Top 10','Top 10'],
+  loading:['讀取中…','Cargando…','Loading…'],
   close:['關閉','Cerrar','Close'], sScript:['字形','Caracteres','Characters'], sLang:['說明語言','Idioma de ayuda','Help language'], sPhon:['拼音／注音','Pinyin / Zhuyin','Pinyin / Zhuyin'], sRate:['語速','Velocidad de voz','Voice speed'],
   trad:['繁體','Tradicional','Traditional'], simp:['簡體','Simplificado','Simplified'], es:['西文','Español','Spanish'], en:['英文','English','English'], zhOnly:['純中文','Solo chino','Chinese only'],
   pinyin:['拼音','Pinyin','Pinyin'], zhuyin:['注音','Zhuyin','Zhuyin'], both:['兩種','Ambos','Both'], off:['不顯示','Ninguno','Off'],
@@ -717,12 +714,11 @@ function renderStart(){
     + '<div class="sect">' + ui('pickLevel') + '</div>' + levels
     + '<div class="sect">' + ui('nick') + '</div><input type="text" id="inName" maxlength="14" autocomplete="off" placeholder="' + esc(Settings.lang === 'zh' ? uiTxt('nickph') : (Settings.lang === 'es' ? UI.nickph[1] : UI.nickph[2])) + '" value="' + esc(G.name) + '">'
     + '<div style="margin-top:12px"><button class="btn main" id="bStart" style="width:100%">' + ui('start') + '</button></div>'
-    + '<div class="links"><button class="btn ghost" id="bBoard">🏆 ' + ui('board', {notr: true}) + '</button><button class="btn ghost" id="bSet">⚙ ' + ui('settings', {notr: true}) + '</button></div></div>';
+    + '<div class="links"><button class="btn ghost" id="bSet">⚙ ' + ui('settings', {notr: true}) + '</button></div></div>';
   $('sStart').querySelectorAll('[data-char]').forEach(b => b.onclick = () => { G.char = b.dataset.char; lsSet('hg.weather.char', G.char); renderStart(); });
   $('sStart').querySelectorAll('[data-lv]').forEach(b => b.onclick = () => { G.level = +b.dataset.lv; renderStart(); });
   $('inName').oninput = e => { G.name = e.target.value.slice(0, 14); lsSet('hg.weather.name', G.name); };
   $('bStart').onclick = startGame;
-  $('bBoard').onclick = openBoard;
   $('bSet').onclick = openSettings;
 }
 
@@ -731,7 +727,6 @@ function startGame(){
   G.round = 0; G.score = 0; G.results = []; G.lastType = null; G.t0 = Date.now();
   const f = []; while(f.length < ROUNDS) f.push(...FORMATS.slice().sort(() => Math.random() - 0.5));
   G.deck = f.slice(0, ROUNDS);
-  try{ window.HGPlays && HGPlays.start('L' + G.level, G.name); }catch(e){}
   nextRound();
 }
 function nextRound(){
@@ -843,14 +838,13 @@ function onGo(){
 /* ---------- 結束 ---------- */
 function endGame(){
   const total = G.score * G.level;
-  try{ window.HGPlays && HGPlays.end({score: total, secs: Math.round((Date.now() - G.t0) / 1000), name: G.name}); }catch(e){}
   const best = +(lsGet('hg.weather.best') || 0); if(total > best) lsSet('hg.weather.best', String(total));
   $('sEnd').innerHTML = '<div class="card" style="margin-top:14px;text-align:center"><h1 style="margin-top:0">' + ui('done') + '</h1><div style="color:var(--ink2)">' + esc(conv('第' + ['一', '二', '三'][G.level - 1] + '關')) + ' · ' + G.score + ' / ' + (ROUNDS * 10) + '</div><div class="big">' + total + '</div><div>' + ui('score') + '</div>'
     + '<div id="saveNote" style="margin:10px 0;color:var(--ink2);min-height:1.4em">' + esc(uiTxt('loading')) + '</div>'
-    + '<div class="row"><button class="btn main" id="bAgain" style="flex:1">' + ui('again2') + '</button></div><div class="links"><button class="btn ghost" id="bB2">🏆 ' + ui('board', {notr: true}) + '</button><button class="btn ghost" id="bH2">⌂ ' + ui('home', {notr: true}) + '</button></div></div>';
-  $('bAgain').onclick = startGame; $('bB2').onclick = openBoard; $('bH2').onclick = () => { renderStart(); go('sStart'); };
+    + '<div class="row"><button class="btn main" id="bAgain" style="flex:1">' + ui('again2') + '</button></div><div class="links"><button class="btn ghost" id="bH2">⌂ ' + ui('home', {notr: true}) + '</button></div></div>';
+  $('bAgain').onclick = startGame; $('bH2').onclick = () => { renderStart(); go('sStart'); };
   go('sEnd');
-  submitScore(G.name || '玩家', total).then(ok => { const n = $('saveNote'); if(n) n.textContent = ok ? uiTxt('saved') : uiTxt('saveFail'); });
+  const n = $('saveNote'); if(n) n.textContent = uiTxt('bestLbl') + ' ' + Math.max(total, best);
 }
 
 /* ---------- 設定視窗 ---------- */
@@ -873,46 +867,6 @@ applyPhon();
 function rerender(){ applyPhon();
   if(CUR === 'sStart') renderStart();
   else if(CUR === 'sPlay'){ buildPlay(); }
-}
-
-/* ---------- 排行榜 ---------- */
-const FB = {ready: null, lib: null};
-function fbReady(){
-  if(FB.ready) return FB.ready;
-  FB.ready = (async () => {
-    const CDN = 'https://www.gstatic.com/firebasejs/10.12.2/';
-    const A = await import(CDN + 'firebase-app.js'), Au = await import(CDN + 'firebase-auth.js'), F = await import(CDN + 'firebase-firestore.js');
-    const app = A.initializeApp(FB_CFG, 'wo'); const auth = Au.getAuth(app);
-    if(!auth.currentUser) await Au.signInAnonymously(auth); else await auth.authStateReady();
-    FB.lib = {F, db: F.getFirestore(app), uid: auth.currentUser.uid};
-    return FB.lib;
-  })().catch(() => { FB.ready = null; return null; });
-  return FB.ready;
-}
-async function submitScore(name, score){
-  try{
-    const L = await fbReady(); if(!L) return false;
-    const ref = L.F.doc(L.db, BOARD, L.uid);
-    const snap = await L.F.getDoc(ref);
-    if(snap.exists() && snap.data().score >= score) return true;
-    await L.F.setDoc(ref, {name: String(name).slice(0, 14), score: score, updatedAt: L.F.serverTimestamp()});
-    return true;
-  }catch(e){ return false; }
-}
-async function loadBoard(){
-  const L = await fbReady(); if(!L) return null;
-  const q = L.F.query(L.F.collection(L.db, BOARD), L.F.orderBy('score', 'desc'), L.F.limit(10));
-  const s = await L.F.getDocs(q);
-  return s.docs.map(d => ({id: d.id, name: d.data().name, score: d.data().score, me: d.id === L.uid}));
-}
-async function openBoard(){
-  openModal('<h2 style="margin:0">🏆 ' + ui('board', {notr: true}) + '</h2><div style="color:var(--ink2);font-size:.9rem">' + ui('top10', {notr: true}) + '</div><div id="lbBody" style="margin:8px 0">' + esc(uiTxt('loading')) + '</div><button class="btn main" id="bClose" style="width:100%">' + ui('close', {notr: true}) + '</button>');
-  $('bClose').onclick = closeModal;
-  let rows = null; try{ rows = await loadBoard(); }catch(e){}
-  const b = $('lbBody'); if(!b) return;
-  if(!rows){ b.textContent = uiTxt('saveFail'); return; }
-  if(!rows.length){ b.textContent = uiTxt('empty'); return; }
-  b.innerHTML = '<table class="lb">' + rows.map((r, i) => '<tr class="' + (r.me ? 'me' : '') + '"><td>' + (i + 1) + '</td><td>' + esc(r.name) + '</td><td>' + esc(r.score) + '</td></tr>').join('') + '</table>';
 }
 
 /* ---------- 開始 ---------- */
@@ -1017,79 +971,6 @@ window.__WO = {G, check, say, genScenario, solve, ITEMS};
     document.body.appendChild(d);
   }
   if(document.body)mk(); else document.addEventListener('DOMContentLoaded',mk);
-})();
-</script>
-<script>
-/* ===== 遊玩紀錄（hgPlays）===== */
-(function () {
-  var GAME = 'que_me_pongo_hoy';
-  var NAME_GETTER = null;
-  var CFG = { apiKey: 'AIzaSyC_YSDn2OH6_GKKwCq0d8QFNl3fYXzTC60', authDomain: 'memorma-24dab.firebaseapp.com',
-              projectId: 'memorma-24dab', appId: '1:806709458465:web:f0d12acb2f911f2f165560' };
-  var V = '10.12.2', CDN = 'https://www.gstatic.com/firebasejs/' + V + '/';
-  var cur = null, readyP = null, lib = null;
-  function gid() { try { return (HG.gameFn ? HG.gameFn() : GAME) || GAME; } catch (e) { return GAME; } }
-  function day() { var d = new Date(Date.now() + 8 * 3600e3); return d.toISOString().slice(0, 10); }
-  function ls(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) {} return null; }
-  function ready() {
-    if (readyP) return readyP;
-    readyP = (async function () {
-      var A = await import(CDN + 'firebase-app.js');
-      var Au = await import(CDN + 'firebase-auth.js');
-      var F = await import(CDN + 'firebase-firestore.js');
-      var app = A.initializeApp(CFG, 'hgplays');
-      var auth = Au.getAuth(app);
-      if (!auth.currentUser) await Au.signInAnonymously(auth);
-      else await auth.authStateReady();
-      lib = { F: F, db: F.getFirestore(app), uid: auth.currentUser.uid };
-      return lib;
-    })().catch(function () { readyP = null; return null; });
-    return readyP;
-  }
-  function getName(n) {
-    if (n) return String(n).slice(0, 36);
-    try { if (NAME_GETTER) return String(NAME_GETTER() || '').slice(0, 36); } catch (e) {}
-    return '';
-  }
-  var HG = window.HGPlays = {
-    visit: function () {
-      var g = gid(), d = day(), key = 'hg.visit.' + g;
-      if (ls(key) === d) return;
-      ready().then(function (L) {
-        if (!L) return;
-        var id = d + '_' + g + '_' + L.uid;
-        return L.F.setDoc(L.F.doc(L.db, 'visits', id), { game: g, day: d, uid: L.uid, at: L.F.serverTimestamp() })
-          .then(function () { ls(key, d); });
-      }).catch(function () {});
-    },
-    start: function (level, name) {
-      var mine = cur = { id: null, level: level == null ? '' : String(level).slice(0, 30) };
-      ready().then(function (L) {
-        if (!L) return;
-        var data = { game: gid(), level: mine.level, uid: L.uid, name: getName(name), day: day(),
-                     startedAt: L.F.serverTimestamp(), done: false };
-        return L.F.addDoc(L.F.collection(L.db, 'plays'), data).then(function (ref) {
-          mine.id = ref.id; if (mine.pendingEnd) HG._finish(mine, mine.pendingEnd);
-        });
-      }).catch(function () {});
-    },
-    end: function (info) {
-      var mine = cur; if (!mine || mine.ended) return; mine.ended = true; info = info || {};
-      if (mine.id) HG._finish(mine, info); else mine.pendingEnd = info;
-    },
-    _finish: function (mine, info) {
-      ready().then(function (L) {
-        if (!L || !mine.id) return;
-        var u = { done: true, endedAt: L.F.serverTimestamp(),
-                  secs: Math.max(0, Math.min(86400, Math.round(Number(info.secs != null ? info.secs : (Date.now() - (mine.t0 || Date.now())) / 1000) || 0))) };
-        var s = Number(info.score); if (isFinite(s) && info.score != null) u.score = Math.max(-1e9, Math.min(1e9, Math.round(s)));
-        var n = getName(info.name); if (n) u.name = n;
-        return L.F.updateDoc(L.F.doc(L.db, 'plays', mine.id), u);
-      }).catch(function () {});
-    }
-  };
-  var _s = HG.start; HG.start = function (l, n) { _s(l, n); if (cur) cur.t0 = Date.now(); };
-  setTimeout(function () { HG.visit(); }, 2500);
 })();
 </script>
 </body>
