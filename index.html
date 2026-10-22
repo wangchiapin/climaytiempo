@@ -267,6 +267,7 @@ function analyze(scn){
     multi: ps.length > 1
   };
 }
+let ALLOW_SKIRT = false;   // 只有女生角色的衣櫃有裙子（由畫面設定）
 function check(o, scn){
   if(!o.top || !o.bottom || !o.shoes) return ['incomplete'];
   const a = analyze(scn), P = [], acc = o.acc || [];
@@ -301,7 +302,7 @@ const MSG = {
   cold: () => sent([T('太冷了', 'tai4 leng3 le5', 'hace demasiado frío', 'it is too cold'), C, T('要多穿一點', 'yao4 duo1 chuan1 yi4 dian3', 'abrígate más', 'wear more')], '。'),
   hot: () => sent([T('太熱了', 'tai4 re4 le5', 'hace demasiado calor', 'it is too hot'), C, T('穿太多了', 'chuan1 tai4 duo1 le5', 'llevas demasiada ropa', 'you are wearing too much')], '。'),
   legsCold: () => sent([T('腿會冷', 'tui3 hui4 leng3', 'tendrás frío en las piernas', 'your legs will be cold'), C, T('要穿長褲', 'yao4 chuan1 chang2 ku4', 'ponte pantalones largos', 'wear long pants')], '。'),
-  legsHot: () => sent([T('穿長褲太熱了', 'chuan1 chang2 ku4 tai4 re4 le5', 'con pantalones largos hace demasiado calor', 'long pants are too hot'), C, T('要穿短褲或裙子', 'yao4 chuan1 duan3 ku4 huo4 qun2 zi5', 'ponte pantalones cortos o falda', 'wear shorts or a skirt')], '。'),
+  legsHot: () => sent([T('穿長褲太熱了', 'chuan1 chang2 ku4 tai4 re4 le5', 'con pantalones largos hace demasiado calor', 'long pants are too hot'), C, ALLOW_SKIRT ? T('要穿短褲或裙子', 'yao4 chuan1 duan3 ku4 huo4 qun2 zi5', 'ponte pantalones cortos o falda', 'wear shorts or a skirt') : T('要穿短褲', 'yao4 chuan1 duan3 ku4', 'ponte pantalones cortos', 'wear shorts')], '。'),
   feetCold: () => sent([T('腳會冷', 'jiao3 hui4 leng3', 'tendrás frío en los pies', 'your feet will be cold'), C, T('不要穿拖鞋或涼鞋', 'bu2 yao4 chuan1 tuo1 xie2 huo4 liang2 xie2', 'no uses chancletas ni sandalias', 'do not wear flip-flops or sandals')], '。'),
   feetWet: () => sent([T('下雨天', 'xia4 yu3 tian1', 'en un día de lluvia', 'on a rainy day'), C, T('腳會濕', 'jiao3 hui4 shi1', 'se te mojarán los pies', 'your feet will get wet'), C, T('不要穿拖鞋或涼鞋', 'bu2 yao4 chuan1 tuo1 xie2 huo4 liang2 xie2', 'no uses chancletas ni sandalias', 'do not wear flip-flops or sandals')], '。'),
   needRain: () => sent([T('會下雨', 'hui4 xia4 yu3', 'va a llover', 'it will rain'), C, T('要帶雨傘或穿雨衣', 'yao4 dai4 yu3 san3 huo4 chuan1 yu3 yi1', 'lleva paraguas o ponte impermeable', 'bring an umbrella or wear a raincoat')], '。'),
@@ -465,7 +466,7 @@ function subsets(arr, maxN){
 }
 function allSolutions(scn){
   const accSets = subsets(BY_SLOT.acc, 3), out = [];
-  for(const top of BY_SLOT.top) for(const outer of [null, ...BY_SLOT.outer]) for(const bottom of BY_SLOT.bottom) for(const shoes of BY_SLOT.shoes) for(const acc of accSets){
+  for(const top of BY_SLOT.top) for(const outer of [null, ...BY_SLOT.outer]) for(const bottom of BY_SLOT.bottom.filter(b => b !== 'skirt' || ALLOW_SKIRT)) for(const shoes of BY_SLOT.shoes) for(const acc of accSets){
     const o = {top, outer, bottom, shoes, acc};
     if(check(o, scn).length === 0) out.push(o);
   }
@@ -724,6 +725,7 @@ function renderStart(){
 
 /* ---------- 遊戲 ---------- */
 function startGame(){
+  ALLOW_SKIRT = G.char === 'girl';
   G.round = 0; G.score = 0; G.results = []; G.lastType = null; G.t0 = Date.now();
   const f = []; while(f.length < ROUNDS) f.push(...FORMATS.slice().sort(() => Math.random() - 0.5));
   G.deck = f.slice(0, ROUNDS);
@@ -786,7 +788,8 @@ function renderTabs(){
 }
 function isWorn(id){ const it = ITEMS[id]; return it.slot === 'acc' ? G.outfit.acc.includes(id) : G.outfit[it.slot] === id; }
 function renderGrid(){
-  $('grid').innerHTML = BY_SLOT[G.tab].map(id => '<button class="item ' + (isWorn(id) ? 'on' : '') + '" data-id="' + id + '">' + iconSVG(id) + '<div>' + itemName(id) + '</div>' + (itemTr(id) ? '<small class="tr">' + esc(itemTr(id)) + '</small>' : '') + '</button>').join('');
+  ALLOW_SKIRT = G.char === 'girl';
+  $('grid').innerHTML = BY_SLOT[G.tab].filter(id => id !== 'skirt' || G.char === 'girl').map(id => '<button class="item ' + (isWorn(id) ? 'on' : '') + '" data-id="' + id + '">' + iconSVG(id) + '<div>' + itemName(id) + '</div>' + (itemTr(id) ? '<small class="tr">' + esc(itemTr(id)) + '</small>' : '') + '</button>').join('');
   $('grid').querySelectorAll('[data-id]').forEach(b => b.onclick = () => onItem(b.dataset.id));
 }
 function onItem(id){
