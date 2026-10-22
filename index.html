@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>今天穿什麼？ ¿Qué me pongo hoy?</title>
+<style>
+:root{--bg:#e8e0d0;--card:#f7f2e8;--card2:#efe7d6;--ink:#2f2b27;--ink2:#6a6258;--line:#c4b9a2;--accent:#4f6b5c;--accent2:#3f5a4c;--warn:#b4694f;--ok:#4f7a5a;--bad:#a8473a;--sel:#dfe8dc}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
+body{min-height:100vh;padding-bottom:34px}
+#app{max-width:620px;margin:0 auto;padding:10px 12px 76px}
+.hidden{display:none!important}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
+ruby{ruby-position:over}
+body[data-phon=zhuyin] rt,body[data-phon=both] rt{font-size:.6em}
+rt{font-size:.5em;line-height:1.1;color:var(--ink2);font-weight:400;letter-spacing:0}
+.zh{font-weight:600}
+small.tr{display:block;font-size:.72em;color:var(--ink2);font-weight:400;line-height:1.25}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:12px}
+h1{font-size:1.7rem;margin:6px 0 2px;text-align:center;line-height:1.5}
+.sub{text-align:center;color:var(--ink2);margin:0 0 10px;font-size:.95rem}
+.row{display:flex;gap:10px}
+.btn{border:1.5px solid var(--ink);background:var(--card);border-radius:12px;padding:10px 14px;font-weight:600;text-align:center}
+.btn:active{transform:scale(.97)}
+.btn.main{background:var(--accent);color:#fff;border-color:var(--accent2);font-size:1.1rem;padding:12px 16px}
+.btn.main small.tr{color:#e3ece6}
+.btn.ghost{border-color:var(--line);background:transparent}
+.btn[disabled]{opacity:.45;pointer-events:none}
+.sect{margin:12px 0 4px;font-weight:700;font-size:.95rem}
+.choice{flex:1;border:2px solid var(--line);background:var(--card);border-radius:14px;padding:8px 6px;text-align:center}
+.choice.on{border-color:var(--accent);background:var(--sel);box-shadow:0 0 0 2px var(--accent) inset}
+.choice svg{width:80px;height:auto;display:block;margin:0 auto}
+.lv{display:flex;gap:8px;align-items:center;text-align:left;padding:9px 12px;width:100%;margin-bottom:6px}
+.lv .n{font-size:1.3rem;font-weight:800;width:30px;text-align:center}
+input[type=text]{width:100%;font:inherit;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:#fffdf7;color:var(--ink)}
+.links{display:flex;gap:8px;margin-top:10px}.links .btn{flex:1;padding:8px 6px;font-size:.9rem}
+/* play */
+.topbar{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-weight:700}
+.topbar .sp{flex:1}
+.pill{background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:3px 12px;font-size:.92rem}
+.iconbtn{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--line);background:var(--card);font-size:1.1rem;padding:0}
+.frame{display:flex;gap:12px;align-items:center}
+.frame .dev{width:82px;flex:0 0 82px}
+.frame .dev svg{width:100%;height:auto;display:block}
+.frame .info{flex:1;min-width:0}
+.chip{display:inline-block;background:var(--card2);border:1px solid var(--line);border-radius:8px;padding:2px 8px;font-size:1rem;margin-bottom:6px}
+.frame .acts{display:flex;gap:8px;flex-wrap:wrap}
+.frame .acts .btn{padding:8px 12px}
+.say{font-size:1.25rem;line-height:2.1;margin-top:8px;border-top:1px dashed var(--line);padding-top:6px}
+.say .pun{margin:0 1px}
+.say .trl{font-size:.88rem;line-height:1.35;color:var(--ink2);margin-top:4px}
+.wicons{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.wi{display:flex;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:3px 8px 3px 4px;font-weight:600;font-size:.95rem}
+.wi svg{width:34px;height:34px}
+.stage{margin:8px auto 4px;width:min(250px,64vw)}
+.stage svg{width:100%;height:auto;display:block;overflow:visible}
+.stage.shiver svg{animation:shiver .22s linear infinite}
+.stage.hop svg{animation:hop .5s ease-out 2}
+@keyframes shiver{0%{transform:translateX(-2px)}50%{transform:translateX(2px)}100%{transform:translateX(-2px)}}
+@keyframes hop{0%{transform:translateY(0)}40%{transform:translateY(-14px)}100%{transform:translateY(0)}}
+.tabs{display:flex;gap:6px;margin:6px 0}
+.tab{flex:1;border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:6px 2px;font-size:.92rem;font-weight:700;line-height:1.25;text-align:center}
+.tab.on{background:var(--accent);color:#fff;border-color:var(--accent2)}
+.tab.on small.tr{color:#e3ece6}
+.tab .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--warn);margin-left:3px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.item{border:2px solid var(--line);background:var(--card);border-radius:12px;padding:4px 4px 6px;text-align:center;font-size:1.02rem;line-height:1.9}
+.item svg{width:100%;height:58px;display:block}
+.item.on{border-color:var(--accent);background:var(--sel);box-shadow:0 0 0 2px var(--accent) inset}
+.item small.tr{line-height:1.15}
+.msg{margin-top:8px}
+.msgbox{border-radius:12px;padding:8px 12px;font-size:1.1rem;line-height:2}
+.msgbox.bad{background:#f3dcd5;border:1.5px solid var(--bad)}
+.msgbox.ok{background:#dcead9;border:1.5px solid var(--ok)}
+.msgbox.info{background:var(--card2);border:1.5px solid var(--line)}
+.msgbox .trl{font-size:.85rem;line-height:1.35;color:var(--ink2)}
+.actions{margin-top:10px}
+.actions .btn{width:100%}
+.big{font-size:2.4rem;font-weight:800;text-align:center;margin:6px 0}
+/* modal */
+#modal{position:fixed;inset:0;background:rgba(47,43,39,.5);display:flex;align-items:flex-end;justify-content:center;z-index:5000;padding:0}
+#modal .sheet{background:var(--card);border-radius:18px 18px 0 0;width:min(620px,100%);max-height:88vh;overflow:auto;padding:14px 16px 28px}
+.seg{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 10px}
+.seg button{flex:1;min-width:70px;border:1.5px solid var(--line);background:var(--card);border-radius:10px;padding:7px 8px;font-weight:600}
+.seg button.on{background:var(--accent);color:#fff;border-color:var(--accent2)}
+table.lb{width:100%;border-collapse:collapse;margin-top:6px}
+table.lb td{padding:7px 6px;border-bottom:1px solid var(--line)}
+table.lb td:first-child{width:34px;font-weight:800}
+table.lb td:last-child{text-align:right;font-weight:800}
+table.lb tr.me{background:var(--sel)}
+@media (min-width:760px){#app{max-width:900px}.play-wrap{display:grid;grid-template-columns:300px 1fr;gap:14px;align-items:start}.stage{width:100%}}
+</style>
+</head>
+<body>
+<div id="app">
+  <section id="sStart"></section>
+  <section id="sPlay" class="hidden"></section>
+  <section id="sEnd" class="hidden"></section>
+</div>
+<div id="modal" class="hidden"><div class="sheet" id="sheet"></div></div>
+
+<!-- ============ 純邏輯（不碰畫面，方便測試）============ -->
+<script id="logic">
+'use strict';
+/* ---------- 拼音（數字調）→ 聲調符號、注音 ---------- */
+const TONE_MARK = {a:'āáǎàa', e:'ēéěèe', i:'īíǐìi', o:'ōóǒòo', u:'ūúǔùu', v:'ǖǘǚǜü'};
+function pyMarked(syl){
+  const m = /^([a-z]+)([1-5])$/.exec(syl); if(!m) return syl;
+  let s = m[1]; const t = +m[2]; let idx = -1;
+  if(s.includes('a')) idx = s.indexOf('a');
+  else if(s.includes('e')) idx = s.indexOf('e');
+  else if(s.includes('ou')) idx = s.indexOf('o');
+  else for(let i = s.length - 1; i >= 0; i--){ if('aeiouv'.includes(s[i])){ idx = i; break; } }
+  let out = '';
+  for(let i = 0; i < s.length; i++){
+    const c = s[i];
+    if(i === idx && t !== 5) out += TONE_MARK[c][t - 1];
+    else out += (c === 'v' ? 'ü' : c);
+  }
+  return out;
+}
+const ZY_INIT = {b:'ㄅ',p:'ㄆ',m:'ㄇ',f:'ㄈ',d:'ㄉ',t:'ㄊ',n:'ㄋ',l:'ㄌ',g:'ㄍ',k:'ㄎ',h:'ㄏ',j:'ㄐ',q:'ㄑ',x:'ㄒ',zh:'ㄓ',ch:'ㄔ',sh:'ㄕ',r:'ㄖ',z:'ㄗ',c:'ㄘ',s:'ㄙ'};
+const ZY_FIN = {a:'ㄚ',o:'ㄛ',e:'ㄜ',ai:'ㄞ',ei:'ㄟ',ao:'ㄠ',ou:'ㄡ',an:'ㄢ',en:'ㄣ',ang:'ㄤ',eng:'ㄥ',ong:'ㄨㄥ',er:'ㄦ',
+  i:'ㄧ',ia:'ㄧㄚ',ie:'ㄧㄝ',iao:'ㄧㄠ',iou:'ㄧㄡ',ian:'ㄧㄢ',in:'ㄧㄣ',iang:'ㄧㄤ',ing:'ㄧㄥ',iong:'ㄩㄥ',
+  u:'ㄨ',ua:'ㄨㄚ',uo:'ㄨㄛ',uai:'ㄨㄞ',uei:'ㄨㄟ',uan:'ㄨㄢ',uen:'ㄨㄣ',uang:'ㄨㄤ',ueng:'ㄨㄥ',v:'ㄩ',ve:'ㄩㄝ',van:'ㄩㄢ',vn:'ㄩㄣ'};
+function pyToZy(syl){
+  const m = /^([a-z]+)([1-5])$/.exec(syl); if(!m) return '';
+  let s = m[1]; const tone = +m[2];
+  if(s[0] === 'y'){ if(s[1] === 'i') s = s.slice(1); else if(s[1] === 'u') s = 'v' + s.slice(2); else s = 'i' + s.slice(1); }
+  else if(s[0] === 'w'){ if(s[1] === 'u') s = s.slice(1); else s = 'u' + s.slice(1); }
+  let ini = '', fin = s;
+  if(/^(zh|ch|sh)/.test(s)){ ini = s.slice(0, 2); fin = s.slice(2); }
+  else if(/^[bpmfdtnlgkhjqxrzcs]/.test(s)){ ini = s[0]; fin = s.slice(1); }
+  if('jqx'.includes(ini) && ini && fin[0] === 'u') fin = 'v' + fin.slice(1);
+  if(ini){ if(fin === 'iu') fin = 'iou'; else if(fin === 'ui') fin = 'uei'; else if(fin === 'un') fin = 'uen'; }
+  if(['zh','ch','sh','r','z','c','s'].includes(ini) && fin === 'i') fin = '';
+  if(fin !== '' && !(fin in ZY_FIN)) return '?' + syl;
+  const zy = (ini ? ZY_INIT[ini] : '') + (fin === '' ? '' : ZY_FIN[fin]);
+  return tone === 5 ? '˙' + zy : zy + ['', 'ˊ', 'ˇ', 'ˋ'][tone - 1];
+}
+
+/* ---------- 簡體對照（只用到的字）---------- */
+const S2_FROM = '氣颱風雲陰霧溫熱涼悶這個點記帶傘會撐圍鏡陽曬長褲還沒選腳濕壞請報機質門來麼聞親訊媽學開遊戲設語純關級數題對錯試結儲暱稱連暫時無載讀歡準備簡體顯靜聲練習續錄總說話讓過與為們兩從圖號見覺買賣進現幫場週較參種聽裡變閉頁預類換';
+const S2_TO   = '气台风云阴雾温热凉闷这个点记带伞会撑围镜阳晒长裤还没选脚湿坏请报机质门来么闻亲讯妈学开游戏设语纯关级数题对错试结储昵称连暂时无载读欢准备简体显静声练习续录总说话让过与为们两从图号见觉买卖进现帮场周较参种听里变闭页预类换';
+const S2 = {}; for(let i = 0; i < S2_FROM.length; i++) S2[S2_FROM[i]] = S2_TO[i];
+
+/* ---------- 句子零件 ---------- */
+function T(zh, py, es, en){ return {segs:[{zh, py: py ? py.split(' ') : []}], es, en}; }
+function PUN(zh, ch){ return {segs:[{zh, py:[], pun:true}], es:ch, en:ch, pun:true}; }
+function cat(...parts){
+  const segs = []; let es = '', en = '';
+  parts.flat(Infinity).forEach(p => {
+    if(!p) return;
+    segs.push(...p.segs);
+    if(p.es) es += (p.pun || !es ? '' : ' ') + p.es;
+    if(p.en) en += (p.pun || !en ? '' : ' ') + p.en;
+  });
+  return {segs, es, en};
+}
+const upFirst = s => s.charAt(0).toUpperCase() + s.slice(1);
+function sent(parts, end){
+  const c = cat(parts); const e = {'。':'.', '！':'!', '？':'?'}[end];
+  c.segs.push({zh:end, py:[], pun:true});
+  c.es = (end === '！' ? '¡' : '') + upFirst(c.es) + e;
+  c.en = upFirst(c.en) + e;
+  return c;
+}
+function para(...sents){
+  const segs = []; const es = [], en = [];
+  sents.flat(Infinity).forEach(s => { if(!s) return; segs.push(...s.segs); es.push(s.es); en.push(s.en); });
+  return {segs, es: es.join(' '), en: en.join(' ')};
+}
+const C = PUN('，', ',');
+const ZH_NUM = ['零','一','二','三','四','五','六','七','八','九','十'];
+const PY_NUM = ['ling2','yi1','er4','san1','si4','wu3','liu4','qi1','ba1','jiu3','shi2'];
+function numParts(n){
+  if(n <= 10) return {zh: ZH_NUM[n], py: PY_NUM[n]};
+  if(n < 20) return {zh: '十' + ZH_NUM[n - 10], py: 'shi2 ' + PY_NUM[n - 10]};
+  const t = Math.floor(n / 10), o = n % 10;
+  return {zh: ZH_NUM[t] + '十' + (o ? ZH_NUM[o] : ''), py: PY_NUM[t] + ' shi2' + (o ? ' ' + PY_NUM[o] : '')};
+}
+function N(n){ const p = numParts(n); return T(p.zh, p.py, String(n), String(n)); }
+function NPCT(n){ const p = numParts(n); return T(p.zh, p.py, n + '%', n + '%'); }
+const DEG = T('度', 'du4', 'grados', 'degrees');
+const TEMP = n => cat(T('氣溫', 'qi4 wen1', 'la temperatura es de', 'the temperature is'), N(n), DEG);
+const PROB = p => cat(T('降雨機率', 'jiang4 yu3 ji1 lv4', 'la probabilidad de lluvia es del', 'the chance of rain is'), T('百分之', 'bai3 fen1 zhi1', '', ''), NPCT(p));
+const PERIOD = {
+  morning: T('早上', 'zao3 shang4', 'por la mañana', 'in the morning'),
+  afternoon: T('下午', 'xia4 wu3', 'por la tarde', 'in the afternoon'),
+  evening: T('晚上', 'wan3 shang4', 'por la noche', 'in the evening')
+};
+const AIR = T('空氣品質不好', 'kong1 qi4 pin3 zhi2 bu4 hao3', 'la calidad del aire es mala', 'the air quality is poor');
+const OH = T('喔', 'o1', '', '');
+const dayPart = scn => scn.day === 'today' ? T('今天', 'jin1 tian1', 'hoy', 'today') : T('明天', 'ming2 tian1', 'mañana', 'tomorrow');
+
+function feelKey(t){ return t <= 10 ? 'vcold' : t <= 15 ? 'cold' : t <= 21 ? 'cool' : t <= 27 ? 'warm' : t <= 32 ? 'hot' : 'sweltering'; }
+const FEEL = {
+  vcold: T('很冷', 'hen3 leng3', 'hace mucho frío', 'it is very cold'),
+  cold: T('有點冷', 'you3 dian3 leng3', 'hace un poco de frío', 'it is a bit cold'),
+  cool: T('涼爽', 'liang2 shuang3', 'hace fresco', 'it is cool'),
+  warm: T('暖和', 'nuan3 huo2', 'hace un tiempo agradable', 'it is warm'),
+  hot: T('很熱', 'hen3 re4', 'hace mucho calor', 'it is very hot'),
+  sweltering: T('悶熱', 'men4 re4', 'hace un calor bochornoso', 'it is hot and muggy')
+};
+const FEEL_F = {
+  vcold: T('好冷', 'hao3 leng3', 'hace mucho frío', 'it is so cold'),
+  cold: T('有點冷', 'you3 dian3 leng3', 'hace un poco de frío', 'it is a bit cold'),
+  cool: T('有點涼', 'you3 dian3 liang2', 'hace un poco de fresco', 'it is a bit cool'),
+  warm: T('不冷也不熱', 'bu4 leng3 ye3 bu2 re4', 'no hace frío ni calor', 'it is neither cold nor hot'),
+  hot: T('好熱', 'hao3 re4', 'hace mucho calor', 'it is so hot'),
+  sweltering: T('好悶', 'hao3 men4', 'hace un calor sofocante', 'it is so muggy')
+};
+const feelPart = (t, friend) => (friend ? FEEL_F : FEEL)[feelKey(t)];
+const SKY_NOW = {
+  sunny: T('晴天', 'qing2 tian1', 'está soleado', 'it is sunny'),
+  cloudy: T('多雲', 'duo1 yun2', 'está nublado', 'it is cloudy'),
+  overcast: T('陰天', 'yin1 tian1', 'está cubierto', 'it is overcast'),
+  rainy: T('下雨', 'xia4 yu3', 'llueve', 'it is raining'),
+  typhoon: T('颱風來了', 'tai2 feng1 lai2 le5', 'llega un tifón', 'a typhoon is coming')
+};
+const SKY_FUT = {
+  sunny: T('晴天', 'qing2 tian1', 'estará soleado', 'it will be sunny'),
+  cloudy: T('多雲', 'duo1 yun2', 'estará nublado', 'it will be cloudy'),
+  overcast: T('陰天', 'yin1 tian1', 'estará cubierto', 'it will be overcast'),
+  rainy: T('會下雨', 'hui4 xia4 yu3', 'lloverá', 'it will rain'),
+  typhoon: T('有颱風', 'you3 tai2 feng1', 'habrá un tifón', 'there will be a typhoon')
+};
+const STORM = T('風雨很大', 'feng1 yu3 hen3 da4', 'el viento y la lluvia son fuertes', 'wind and rain are strong');
+
+/* ---------- 衣物 ---------- */
+const ITEMS = {
+  tee:      {slot:'top',    w:1, zh:'短袖',     py:'duan3 xiu4',           es:'camiseta de manga corta', en:'short-sleeve shirt'},
+  long:     {slot:'top',    w:2, zh:'長袖',     py:'chang2 xiu4',          es:'camiseta de manga larga', en:'long-sleeve shirt'},
+  tank:     {slot:'top',    w:0, zh:'背心',     py:'bei4 xin1',            es:'camiseta sin mangas',     en:'tank top'},
+  sweater:  {slot:'top',    w:3, zh:'毛衣',     py:'mao2 yi1',             es:'suéter',                  en:'sweater'},
+  jacket:   {slot:'outer',  w:2, zh:'外套',     py:'wai4 tao4',            es:'chaqueta',                en:'jacket'},
+  coat:     {slot:'outer',  w:4, zh:'厚外套',   py:'hou4 wai4 tao4',       es:'abrigo grueso',           en:'heavy coat'},
+  raincoat: {slot:'outer',  w:0, zh:'雨衣',     py:'yu3 yi1',              es:'impermeable',             en:'raincoat'},
+  shorts:   {slot:'bottom', w:0, zh:'短褲',     py:'duan3 ku4',            es:'pantalones cortos',       en:'shorts'},
+  pants:    {slot:'bottom', w:2, zh:'長褲',     py:'chang2 ku4',           es:'pantalones largos',       en:'long pants'},
+  skirt:    {slot:'bottom', w:1, zh:'裙子',     py:'qun2 zi5',             es:'falda',                   en:'skirt'},
+  sandals:  {slot:'shoes',  w:0, zh:'涼鞋',     py:'liang2 xie2',          es:'sandalias',               en:'sandals'},
+  slippers: {slot:'shoes',  w:0, zh:'拖鞋',     py:'tuo1 xie2',            es:'chancletas',              en:'flip-flops'},
+  sneakers: {slot:'shoes',  w:0, zh:'球鞋',     py:'qiu2 xie2',            es:'zapatillas deportivas',   en:'sneakers'},
+  boots:    {slot:'shoes',  w:0, zh:'雨鞋',     py:'yu3 xie2',             es:'botas de lluvia',         en:'rain boots'},
+  umbrella: {slot:'acc',    w:0, zh:'雨傘',     py:'yu3 san3',             es:'paraguas',                en:'umbrella'},
+  hat:      {slot:'acc',    w:0, zh:'帽子',     py:'mao4 zi5',             es:'sombrero',                en:'hat'},
+  scarf:    {slot:'acc',    w:1, zh:'圍巾',     py:'wei2 jin1',            es:'bufanda',                 en:'scarf'},
+  gloves:   {slot:'acc',    w:1, zh:'手套',     py:'shou3 tao4',           es:'guantes',                 en:'gloves'},
+  mask:     {slot:'acc',    w:0, zh:'口罩',     py:'kou3 zhao4',           es:'mascarilla',              en:'face mask'},
+  shades:   {slot:'acc',    w:0, zh:'太陽眼鏡', py:'tai4 yang2 yan3 jing4', es:'gafas de sol',           en:'sunglasses'},
+  sunscreen:{slot:'acc',    w:0, zh:'防曬乳',   py:'fang2 shai4 ru3',      es:'protector solar',         en:'sunscreen'}
+};
+const SLOTS = ['top', 'outer', 'bottom', 'shoes', 'acc'];
+const BY_SLOT = {}; SLOTS.forEach(s => BY_SLOT[s] = Object.keys(ITEMS).filter(k => ITEMS[k].slot === s));
+
+/* ---------- 規則：穿得對不對 ---------- */
+function analyze(scn){
+  const ps = scn.periods;
+  return {
+    minT: Math.min(...ps.map(p => p.t)), maxT: Math.max(...ps.map(p => p.t)),
+    rain: ps.some(p => p.sky === 'rainy' || p.sky === 'typhoon'),
+    typhoon: ps.some(p => p.sky === 'typhoon'),
+    air: ps.some(p => p.air),
+    sun: ps.some(p => p.sky === 'sunny' && p.t >= 28),
+    multi: ps.length > 1
+  };
+}
+function check(o, scn){
+  if(!o.top || !o.bottom || !o.shoes) return ['incomplete'];
+  const a = analyze(scn), P = [], acc = o.acc || [];
+  const has = id => acc.includes(id);
+  const outerW = o.outer ? ITEMS[o.outer].w : 0;
+  const extra = (has('scarf') ? 1 : 0) + (has('gloves') ? 1 : 0);
+  const W = ITEMS[o.top].w + outerW + ITEMS[o.bottom].w + extra;
+  const Wmin = a.minT <= 10 ? 7 : a.minT <= 15 ? 5 : a.minT <= 18 ? 4 : a.minT <= 21 ? 3 : 0;
+  const Wmax = a.maxT >= 28 ? (a.multi ? 3 : 2) : a.maxT >= 23 ? 4 : 99;
+  const Whot = a.multi ? W - outerW - extra : W;
+  if(W < Wmin) P.push('cold');
+  if(Whot > Wmax) P.push('hot');
+  if(a.minT <= 15 && o.bottom !== 'pants') P.push('legsCold');
+  else if(a.minT <= 21 && o.bottom === 'shorts') P.push('legsCold');
+  if(!a.multi && a.maxT >= 28 && o.bottom === 'pants') P.push('legsHot');
+  const open = o.shoes === 'sandals' || o.shoes === 'slippers';
+  if(a.rain && open) P.push('feetWet');
+  else if(a.minT <= 15 && open) P.push('feetCold');
+  if(a.typhoon){
+    if(o.outer !== 'raincoat') P.push('needRaincoat');
+    if(has('umbrella')) P.push('typhoonUmb');
+  } else if(a.rain && !has('umbrella') && o.outer !== 'raincoat') P.push('needRain');
+  if(a.sun && !(has('hat') || has('shades') || has('sunscreen'))) P.push('sun');
+  if(a.air && !has('mask')) P.push('air');
+  if(a.minT <= 10 && !(has('scarf') || has('gloves'))) P.push('needScarf');
+  if(a.minT >= 16 && (has('scarf') || has('gloves'))) P.push('noScarf');
+  if((o.outer === 'coat' && a.minT >= 16) || (o.top === 'sweater' && a.minT >= 22)) P.push('tooThick');
+  return P;
+}
+const MSG = {
+  incomplete: () => sent([T('還沒穿好', 'hai2 mei2 chuan1 hao3', 'todavía no estás vestido', 'you are not dressed yet'), C, T('要選上衣', 'yao4 xuan3 shang4 yi1', 'elige una prenda de arriba', 'choose a top'), PUN('、', ','), T('下身', 'xia4 shen1', 'una de abajo', 'bottoms'), T('和', 'han4', 'y', 'and'), T('鞋子', 'xie2 zi5', 'zapatos', 'shoes')], '。'),
+  cold: () => sent([T('太冷了', 'tai4 leng3 le5', 'hace demasiado frío', 'it is too cold'), C, T('要多穿一點', 'yao4 duo1 chuan1 yi4 dian3', 'abrígate más', 'wear more')], '。'),
+  hot: () => sent([T('太熱了', 'tai4 re4 le5', 'hace demasiado calor', 'it is too hot'), C, T('穿太多了', 'chuan1 tai4 duo1 le5', 'llevas demasiada ropa', 'you are wearing too much')], '。'),
+  legsCold: () => sent([T('腿會冷', 'tui3 hui4 leng3', 'tendrás frío en las piernas', 'your legs will be cold'), C, T('要穿長褲', 'yao4 chuan1 chang2 ku4', 'ponte pantalones largos', 'wear long pants')], '。'),
+  legsHot: () => sent([T('穿長褲太熱了', 'chuan1 chang2 ku4 tai4 re4 le5', 'con pantalones largos hace demasiado calor', 'long pants are too hot'), C, T('要穿短褲或裙子', 'yao4 chuan1 duan3 ku4 huo4 qun2 zi5', 'ponte pantalones cortos o falda', 'wear shorts or a skirt')], '。'),
+  feetCold: () => sent([T('腳會冷', 'jiao3 hui4 leng3', 'tendrás frío en los pies', 'your feet will be cold'), C, T('不要穿拖鞋或涼鞋', 'bu2 yao4 chuan1 tuo1 xie2 huo4 liang2 xie2', 'no uses chancletas ni sandalias', 'do not wear flip-flops or sandals')], '。'),
+  feetWet: () => sent([T('下雨天', 'xia4 yu3 tian1', 'en un día de lluvia', 'on a rainy day'), C, T('腳會濕', 'jiao3 hui4 shi1', 'se te mojarán los pies', 'your feet will get wet'), C, T('不要穿拖鞋或涼鞋', 'bu2 yao4 chuan1 tuo1 xie2 huo4 liang2 xie2', 'no uses chancletas ni sandalias', 'do not wear flip-flops or sandals')], '。'),
+  needRain: () => sent([T('會下雨', 'hui4 xia4 yu3', 'va a llover', 'it will rain'), C, T('要帶雨傘或穿雨衣', 'yao4 dai4 yu3 san3 huo4 chuan1 yu3 yi1', 'lleva paraguas o ponte impermeable', 'bring an umbrella or wear a raincoat')], '。'),
+  needRaincoat: () => sent([T('颱風天', 'tai2 feng1 tian1', 'en un día de tifón', 'on a typhoon day'), C, T('要穿雨衣', 'yao4 chuan1 yu3 yi1', 'ponte impermeable', 'wear a raincoat')], '。'),
+  typhoonUmb: () => sent([T('風太大', 'feng1 tai4 da4', 'hace demasiado viento', 'the wind is too strong'), C, T('傘會壞掉', 'san3 hui4 huai4 diao4', 'el paraguas se romperá', 'an umbrella will break')], '。'),
+  sun: () => sent([T('太陽很大', 'tai4 yang2 hen3 da4', 'el sol es fuerte', 'the sun is strong'), C, T('要戴帽子', 'yao4 dai4 mao4 zi5', 'ponte sombrero', 'wear a hat'), PUN('、', ','), T('太陽眼鏡', 'tai4 yang2 yan3 jing4', 'gafas de sol', 'sunglasses'), PUN('，', ','), T('或擦防曬乳', 'huo4 ca1 fang2 shai4 ru3', 'o ponte protector solar', 'or put on sunscreen')], '。'),
+  air: () => sent([T('空氣不好', 'kong1 qi4 bu4 hao3', 'el aire está contaminado', 'the air is bad'), C, T('要戴口罩', 'yao4 dai4 kou3 zhao4', 'ponte mascarilla', 'wear a mask')], '。'),
+  needScarf: () => sent([T('很冷', 'hen3 leng3', 'hace mucho frío', 'it is very cold'), C, T('要圍圍巾或戴手套', 'yao4 wei2 wei2 jin1 huo4 dai4 shou3 tao4', 'ponte bufanda o guantes', 'wear a scarf or gloves')], '。'),
+  noScarf: () => sent([T('不用圍巾和手套', 'bu2 yong4 wei2 jin1 han4 shou3 tao4', 'no necesitas bufanda ni guantes', 'you do not need a scarf or gloves'), C, T('太熱了', 'tai4 re4 le5', 'hace demasiado calor', 'it is too hot')], '。'),
+  tooThick: () => sent([T('不用穿這麼厚', 'bu2 yong4 chuan1 zhe4 me5 hou4', 'no hace falta abrigarse tanto', 'you do not need to wear so thick')], '。')
+};
+const MOOD_OF = {cold:'cold', legsCold:'cold', feetCold:'cold', needScarf:'cold', hot:'hot', legsHot:'hot', noScarf:'hot', tooThick:'hot', sun:'hot', needRain:'wet', needRaincoat:'wet', feetWet:'wet', typhoonUmb:'wet'};
+const OKMSG = [
+  () => sent([T('穿對了', 'chuan1 dui4 le5', '¡vestido correctamente', 'dressed right'), C, T('出門吧', 'chu1 men2 ba5', 'a salir', 'off you go')], '！'),
+  () => sent([T('穿得很好', 'chuan1 de5 hen3 hao3', 'vas muy bien vestido', 'you are dressed well'), C, T('出門吧', 'chu1 men2 ba5', 'a salir', 'off you go')], '！'),
+  () => sent([T('今天不怕了', 'jin1 tian1 bu2 pa4 le5', 'hoy no hay problema', 'today is no problem')], '！')
+];
+
+/* ---------- 出題 ---------- */
+const rint = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const PROBS = {sunny:[10], cloudy:[10, 20], overcast:[20, 30], rainy:[70, 80, 90], typhoon:[90]};
+const mkP = (sky, t, when, air) => ({when: when || null, t, sky, prob: pick(PROBS[sky]), air: !!air});
+const BASE_TYPES = [
+  {name:'hotSun',   make: () => mkP('sunny', rint(29, 34))},
+  {name:'warm',     make: () => mkP(pick(['sunny', 'cloudy']), rint(23, 26))},
+  {name:'cool',     make: () => mkP(pick(['overcast', 'cloudy']), rint(18, 21))},
+  {name:'coolRain', make: () => mkP('rainy', rint(17, 21))},
+  {name:'coldRain', make: () => mkP('rainy', rint(11, 14))},
+  {name:'cold',     make: () => mkP(pick(['sunny', 'overcast']), rint(7, 10))},
+  {name:'chilly',   make: () => mkP('cloudy', rint(12, 15))},
+  {name:'typhoon',  make: () => mkP('typhoon', rint(26, 29))},
+  {name:'air',      make: () => mkP('overcast', rint(22, 26), null, true)},
+  {name:'hotRain',  make: () => mkP('rainy', rint(28, 31))}
+];
+const SWING_TYPES = [
+  {name:'coldToHot',    make: () => [mkP('sunny', rint(10, 15), 'morning'), mkP('sunny', rint(27, 31), 'afternoon')]},
+  {name:'coldToRain',   make: () => [mkP(pick(['sunny', 'cloudy']), rint(11, 15), 'morning'), mkP('rainy', rint(16, 19), 'afternoon')]},
+  {name:'warmToRain',   make: () => [mkP('sunny', rint(24, 26), 'morning'), mkP('rainy', rint(21, 23), 'afternoon')]},
+  {name:'rainToHot',    make: () => [mkP('rainy', rint(24, 26), 'morning'), mkP('sunny', rint(30, 32), 'afternoon')]},
+  {name:'hotToRain',    make: () => [mkP('sunny', rint(29, 32), 'afternoon'), mkP('rainy', rint(24, 26), 'evening')]},
+  {name:'coolEvening',  make: () => [mkP('cloudy', rint(22, 24), 'afternoon'), mkP('overcast', rint(13, 15), 'evening')]}
+];
+const FORMATS = ['news', 'phone', 'push', 'friend'];
+function genScenario(level, fmt, avoidName){
+  const day = pick(['today', 'tomorrow']);
+  let type, periods;
+  const pool = level === 3 ? SWING_TYPES : BASE_TYPES;
+  do { type = pick(pool); } while(type.name === avoidName && pool.length > 1);
+  if(level === 3) periods = type.make(); else periods = [type.make()];
+  return {level, day, fmt, type: type.name, periods};
+}
+
+/* ---------- 說的內容（四種管道 × 三關）---------- */
+function perClause(p, friend, withTemp){
+  const mid = (p.sky === 'rainy' || p.sky === 'typhoon') ? SKY_FUT[p.sky] : feelPart(p.t, friend);
+  return cat(PERIOD[p.when], mid, withTemp ? [C, TEMP(p.t)] : null);
+}
+function reminder(scn){
+  const a = analyze(scn);
+  const R = (zh, py, es, en) => cat(T('記得', 'ji4 de5', 'recuerda', 'remember to'), T(zh, py, es, en));
+  if(a.typhoon) return R('穿雨衣', 'chuan1 yu3 yi1', 'ponerte el impermeable', 'wear a raincoat');
+  if(a.rain) return R('帶傘', 'dai4 san3', 'llevar paraguas', 'bring an umbrella');
+  if(a.air) return R('戴口罩', 'dai4 kou3 zhao4', 'ponerte mascarilla', 'wear a mask');
+  if(a.sun) return R('擦防曬乳', 'ca1 fang2 shai4 ru3', 'ponerte protector solar', 'put on sunscreen');
+  if(a.minT <= 15) return R('多穿一點', 'duo1 chuan1 yi4 dian3', 'abrigarte más', 'dress warmer');
+  return null;
+}
+function buildNews(scn){
+  const ps = scn.periods, p = ps[0], d = dayPart(scn), L = scn.level;
+  if(L === 1){
+    const s1 = p.sky === 'typhoon' ? sent([d, SKY_NOW.typhoon, C, STORM], '。')
+      : sent([d, SKY_NOW[p.sky], C, T('天氣', 'tian1 qi4', '', 'and'), feelPart(p.t)], '。');
+    return para(s1, p.air ? sent([AIR], '。') : null);
+  }
+  if(L === 2) return para(sent([d, SKY_NOW[p.sky], C, TEMP(p.t)], '。'), sent([PROB(p.prob)], '。'), p.air ? sent([AIR], '。') : null);
+  return para(sent([d, perClause(ps[0], false, true)], '。'), sent([perClause(ps[1], false, true)], '。'));
+}
+function buildPhone(scn){
+  const ps = scn.periods, p = ps[0], d = dayPart(scn), L = scn.level;
+  const WILL = T('會下雨', 'hui4 xia4 yu3', 'va a llover', 'it is going to rain');
+  const TYPH = T('有颱風', 'you3 tai2 feng1', 'hay un tifón', 'there is a typhoon');
+  const NOT = T('不會下雨', 'bu2 hui4 xia4 yu3', 'no va a llover', 'it will not rain');
+  if(L === 1){
+    const tail = p.sky === 'typhoon' ? [C, STORM] : p.sky === 'rainy' ? [C, WILL] : null;
+    const first = p.sky === 'typhoon' ? sent([d, TYPH, C, STORM], '。') : sent([d, feelPart(p.t), tail], '。');
+    const r = reminder(scn);
+    return para(first, p.air ? sent([AIR], '。') : null, r ? sent([r], '。') : null);
+  }
+  if(L === 2){
+    const w = p.sky === 'typhoon' ? TYPH : p.sky === 'rainy' ? WILL : NOT;
+    return para(sent([d, N(p.t), DEG, C, w], '。'), p.air ? sent([AIR], '。') : null);
+  }
+  const rp = ps.find(x => x.sky === 'rainy');
+  return para(
+    sent([d, PERIOD[ps[0].when], N(ps[0].t), DEG, C, PERIOD[ps[1].when], N(ps[1].t), DEG], '。'),
+    rp ? sent([PERIOD[rp.when], WILL], '。') : null);
+}
+const TITLE = {
+  typhoon: T('颱風特報', 'tai2 feng1 te4 bao4', 'Alerta de tifón', 'Typhoon warning'),
+  rain: T('大雨特報', 'da4 yu3 te4 bao4', 'Alerta de lluvia fuerte', 'Heavy rain warning'),
+  cold: T('低溫特報', 'di1 wen1 te4 bao4', 'Alerta de bajas temperaturas', 'Low temperature warning'),
+  hot: T('高溫特報', 'gao1 wen1 te4 bao4', 'Alerta de altas temperaturas', 'High temperature warning'),
+  air: T('空氣品質提醒', 'kong1 qi4 pin3 zhi2 ti2 xing3', 'Aviso de calidad del aire', 'Air quality notice'),
+  swing: T('溫差特報', 'wen1 cha1 te4 bao4', 'Alerta de diferencia de temperatura', 'Temperature swing warning'),
+  plain: T('天氣提醒', 'tian1 qi4 ti2 xing3', 'Aviso del tiempo', 'Weather notice')
+};
+function buildPush(scn){
+  const ps = scn.periods, p = ps[0], d = dayPart(scn), L = scn.level, a = analyze(scn);
+  const kind = a.typhoon ? 'typhoon' : a.rain ? 'rain' : (L === 3 && a.minT <= 15 && a.maxT >= 26) ? 'swing' : a.minT <= 10 ? 'cold' : a.maxT >= 33 ? 'hot' : a.air ? 'air' : 'plain';
+  const title = sent([TITLE[kind]], '！');
+  let body;
+  if(L === 3){
+    if(kind === 'swing') body = para(sent([PERIOD[ps[0].when], N(ps[0].t), DEG, C, PERIOD[ps[1].when], N(ps[1].t), DEG], '。'), sent([T('溫差很大', 'wen1 cha1 hen3 da4', 'hay una gran diferencia de temperatura', 'the temperature swing is big')], '。'));
+    else body = para(sent([d, perClause(ps[0], false, true)], '。'), sent([perClause(ps[1], false, true)], '。'));
+    return para(title, body);
+  }
+  if(kind === 'typhoon') body = L === 1 ? sent([STORM, C, T('傘會壞掉', 'san3 hui4 huai4 diao4', 'el paraguas se romperá', 'an umbrella will break'), C, T('請穿雨衣', 'qing3 chuan1 yu3 yi1', 'ponte impermeable', 'please wear a raincoat')], '。') : sent([STORM, C, PROB(p.prob)], '。');
+  else if(kind === 'rain') body = L === 1 ? sent([d, T('會下大雨', 'hui4 xia4 da4 yu3', 'va a llover mucho', 'it is going to rain heavily'), C, T('出門請帶傘', 'chu1 men2 qing3 dai4 san3', 'al salir, lleva paraguas', 'bring an umbrella when you go out')], '。') : sent([PROB(p.prob), C, TEMP(p.t)], '。');
+  else if(kind === 'cold') body = L === 1 ? sent([d, feelPart(p.t), C, T('請注意保暖', 'qing3 zhu4 yi4 bao3 nuan3', 'abrígate bien', 'keep warm')], '。') : sent([T('氣溫降到', 'qi4 wen1 jiang4 dao4', 'la temperatura baja a', 'the temperature drops to'), N(p.t), DEG], '。');
+  else if(kind === 'hot') body = L === 1 ? sent([d, feelPart(p.t), C, T('請注意防曬', 'qing3 zhu4 yi4 fang2 shai4', 'protégete del sol', 'protect yourself from the sun')], '。') : sent([TEMP(p.t), C, T('請注意防曬', 'qing3 zhu4 yi4 fang2 shai4', 'protégete del sol', 'protect yourself from the sun')], '。');
+  else if(kind === 'air') body = para(sent([T('空氣不好', 'kong1 qi4 bu4 hao3', 'el aire está contaminado', 'the air is bad'), C, T('請戴口罩', 'qing3 dai4 kou3 zhao4', 'ponte mascarilla', 'please wear a mask')], '。'), L === 2 ? sent([TEMP(p.t)], '。') : null);
+  else body = L === 1 ? sent([d, SKY_NOW[p.sky], C, T('天氣', 'tian1 qi4', '', 'and'), feelPart(p.t)], '。') : sent([TEMP(p.t), C, PROB(p.prob)], '。');
+  return para(title, body);
+}
+const FRIEND_NAMES = [
+  T('媽媽', 'ma1 ma5', 'mamá', 'Mom'), T('朋友', 'peng2 you5', 'amigo', 'a friend'), T('同學', 'tong2 xue2', 'compañero', 'a classmate')
+];
+function buildFriend(scn){
+  const ps = scn.periods, p = ps[0], d = dayPart(scn), L = scn.level, a = analyze(scn);
+  const FWILL = T('會下雨', 'hui4 xia4 yu3', 'va a llover', 'it is going to rain');
+  if(L === 1){
+    let s1;
+    if(p.sky === 'typhoon') s1 = sent([T('外面有颱風', 'wai4 mian4 you3 tai2 feng1', 'afuera hay tifón', 'there is a typhoon outside'), OH], '！');
+    else if(p.sky === 'rainy') s1 = sent([T('外面在下雨', 'wai4 mian4 zai4 xia4 yu3', 'afuera está lloviendo', 'it is raining outside'), OH], '！');
+    else if(p.air) s1 = sent([T('空氣不太好', 'kong1 qi4 bu2 tai4 hao3', 'el aire no está muy bien', 'the air is not so good'), OH], '！');
+    else if(feelKey(p.t) === 'warm') s1 = sent([d, feelPart(p.t, true), C, T('很舒服', 'hen3 shu1 fu2', 'se está muy a gusto', 'it is very comfortable')], '！');
+    else s1 = sent([d, feelPart(p.t, true), OH], '！');
+    const r = reminder(scn);
+    return para(s1, r ? sent([r, OH], '！') : null);
+  }
+  if(L === 2){
+    const s1 = sent([d, N(p.t), DEG, OH, C, feelPart(p.t, true)], '！');
+    let s2 = null;
+    if(p.sky === 'typhoon') s2 = sent([T('外面有颱風', 'wai4 mian4 you3 tai2 feng1', 'afuera hay tifón', 'there is a typhoon outside'), OH], '！');
+    else if(p.sky === 'rainy') s2 = sent([PROB(p.prob), OH], '！');
+    else if(p.air) s2 = sent([T('空氣不太好', 'kong1 qi4 bu2 tai4 hao3', 'el aire no está muy bien', 'the air is not so good'), OH], '！');
+    return para(s1, s2);
+  }
+  const m = ps.map(x => (x.sky === 'rainy' ? SKY_FUT.rainy : feelPart(x.t, true)));
+  return para(sent([PERIOD[ps[0].when], m[0], C, PERIOD[ps[1].when], m[1], OH], '！'), sent([d, N(ps[0].t), DEG, C, N(ps[1].t), DEG], '。'));
+}
+const BUILDERS = {news: buildNews, phone: buildPhone, push: buildPush, friend: buildFriend};
+function say(scn){ return BUILDERS[scn.fmt](scn); }
+
+/* ---------- 找一組正確的穿法（答錯兩次時示範）---------- */
+function subsets(arr, maxN){
+  const out = [[]];
+  for(let i = 0; i < arr.length; i++){ const n = out.length; for(let j = 0; j < n; j++) if(out[j].length < maxN) out.push(out[j].concat(arr[i])); }
+  return out;
+}
+function allSolutions(scn){
+  const accSets = subsets(BY_SLOT.acc, 3), out = [];
+  for(const top of BY_SLOT.top) for(const outer of [null, ...BY_SLOT.outer]) for(const bottom of BY_SLOT.bottom) for(const shoes of BY_SLOT.shoes) for(const acc of accSets){
+    const o = {top, outer, bottom, shoes, acc};
+    if(check(o, scn).length === 0) out.push(o);
+  }
+  return out;
+}
+function solve(scn){
+  const all = allSolutions(scn); if(!all.length) return null;
+  const min = Math.min(...all.map(o => o.acc.length + (o.outer ? 1 : 0)));
+  return pick(all.filter(o => o.acc.length + (o.outer ? 1 : 0) <= min + 1));
+}
+</script>
+
+<!-- ============ 共用設定（和其他遊戲同一份 hanziGames.settings）============ -->
+<script id="settings">
+  const SETTINGS_KEY = 'hanziGames.settings';
+  const SET_OPTS = { script:['trad','simp'], lang:['es','en','zh'], phon:['pinyin','zhuyin','both','off'], rate:['slow','normal','fast'] };
+  const RATE_VALUE = { slow:0.45, normal:0.65, fast:0.85 };
+  function writeSettings(o){
+    try{
+      let cur = {};
+      try{ cur = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}') || {}; }catch(e){}
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(Object.assign(cur, { v:1, script:o.script, lang:o.lang, phon:o.phon, rate:o.rate })));
+    }catch(e){}
+  }
+  function readSettings(){
+    const out = { v:1, script:'trad', lang:'es', phon:'pinyin', rate:'normal' };
+    let saved = null;
+    try{ saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || 'null'); }catch(e){}
+    if (saved && typeof saved === 'object'){
+      Object.keys(SET_OPTS).forEach(k => { if (SET_OPTS[k].includes(saved[k])) out[k] = saved[k]; });
+    } else writeSettings(out);
+    return out;
+  }
+  const Settings = readSettings();
+</script>
+
+<!-- ============ 畫面與遊戲流程 ============ -->
+<script id="ui">
+'use strict';
+const BOARD = 'weatherOutfitBoard';
+const FB_CFG = { apiKey:'AIzaSyC_YSDn2OH6_GKKwCq0d8QFNl3fYXzTC60', authDomain:'memorma-24dab.firebaseapp.com', projectId:'memorma-24dab', appId:'1:806709458465:web:f0d12acb2f911f2f165560' };
+const ROUNDS = 10;
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const conv = s => Settings.script === 'simp' ? Array.from(s).map(c => S2[c] || c).join('') : s;
+const lsGet = k => { try{ return localStorage.getItem(k); }catch(e){ return null; } };
+const lsSet = (k, v) => { try{ localStorage.setItem(k, v); }catch(e){} };
+
+/* ---------- 介面文字：[中文, 西文, 英文] ---------- */
+const UI = {
+  title:['今天穿什麼？','¿Qué me pongo hoy?','What should I wear today?'],
+  tagline:['聽天氣預報，幫角色選衣服','Escucha el pronóstico y viste al personaje','Listen to the forecast and dress the character'],
+  pickChar:['選角色','Elige personaje','Choose a character'],
+  boy:['男生','Chico','Boy'], girl:['女生','Chica','Girl'],
+  pickLevel:['選關卡','Elige nivel','Choose a level'],
+  l1:['第一關','Nivel 1','Level 1'], l2:['第二關','Nivel 2','Level 2'], l3:['第三關','Nivel 3','Level 3'],
+  l1d:['一種天氣，選對衣服','Un solo clima: elige la ropa adecuada','One kind of weather: pick the right clothes'],
+  l2d:['聽溫度和降雨機率','Escucha la temperatura y la probabilidad de lluvia','Hear the temperature and chance of rain'],
+  l3d:['一天裡天氣會變','El clima cambia durante el día','The weather changes during the day'],
+  nick:['暱稱','Apodo','Nickname'], nickph:['你的名字','Tu nombre','Your name'],
+  start:['開始','Empezar','Start'], board:['排行榜','Clasificación','Leaderboard'], settings:['設定','Ajustes','Settings'],
+  listen:['聽','Escuchar','Listen'], again:['再聽一次','Escuchar otra vez','Listen again'], peek:['看字','Ver texto','Show text'],
+  go:['出門！','¡Salir!','Go out!'], retry:['再試一次','Intentar otra vez','Try again'], next:['下一題','Siguiente','Next'], finish:['看結果','Ver resultado','See result'],
+  q:['第','Pregunta','Question'],
+  tTop:['上衣','Arriba','Tops'], tOuter:['外套類','Abrigos','Outerwear'], tBottom:['下身','Abajo','Bottoms'], tShoes:['鞋子','Calzado','Shoes'], tAcc:['配件','Accesorios','Accessories'],
+  done:['完成了！','¡Terminado!','Done!'], score:['分數','Puntos','Score'], again2:['再玩一次','Jugar otra vez','Play again'], home:['回首頁','Inicio','Home'],
+  saved:['已存到排行榜','Guardado en la clasificación','Saved to the leaderboard'], saveFail:['排行榜暫時連不上','No se pudo conectar con la clasificación','Could not reach the leaderboard'],
+  loading:['讀取中…','Cargando…','Loading…'], empty:['還沒有人上榜','Aún no hay nadie','Nobody yet'], top10:['前 10 名','Top 10','Top 10'],
+  close:['關閉','Cerrar','Close'], sScript:['字形','Caracteres','Characters'], sLang:['說明語言','Idioma de ayuda','Help language'], sPhon:['拼音／注音','Pinyin / Zhuyin','Pinyin / Zhuyin'], sRate:['語速','Velocidad de voz','Voice speed'],
+  trad:['繁體','Tradicional','Traditional'], simp:['簡體','Simplificado','Simplified'], es:['西文','Español','Spanish'], en:['英文','English','English'], zhOnly:['純中文','Solo chino','Chinese only'],
+  pinyin:['拼音','Pinyin','Pinyin'], zhuyin:['注音','Zhuyin','Zhuyin'], both:['兩種','Ambos','Both'], off:['不顯示','Ninguno','Off'],
+  slow:['慢','Lenta','Slow'], normal:['正常','Normal','Normal'], fast:['快','Rápida','Fast'],
+  restart:['重新開始','Reiniciar','Restart'], answer:['參考穿法','Una forma correcta','A correct outfit'], pts:['分','pts','pts'],
+  fNews:['新聞氣象','Noticiero del tiempo','Weather news'], fPhone:['手機提醒','Aviso del móvil','Phone reminder'], fPush:['推播','Notificación push','Push alert'], fFriend:['訊息','Mensaje','Message'],
+  from:['來自','De','From']
+};
+const FMT_LABEL = {news:[['新聞氣象','xin1 wen2 qi4 xiang4'], 'fNews'], phone:[['手機提醒','shou3 ji1 ti2 xing3'], 'fPhone'], push:[['推播','tui1 bo1'], 'fPush'], friend:[['親友訊息','qin1 you3 xun4 xi2'], 'fFriend']};
+const T_ES = {fNews:'Noticiero del tiempo', fPhone:'Aviso del móvil', fPush:'Notificación push', fFriend:'Mensaje de un familiar o amigo'};
+const T_EN = {fNews:'Weather news', fPhone:'Phone reminder', fPush:'Push alert', fFriend:'Message from family or a friend'};
+function ui(k, opt){
+  const u = UI[k]; const zh = conv(u[0]);
+  const tr = Settings.lang === 'es' ? u[1] : Settings.lang === 'en' ? u[2] : '';
+  return '<span class="zh">' + esc(zh) + '</span>' + (tr && !(opt && opt.notr) ? '<small class="tr">' + esc(tr) + '</small>' : '');
+}
+const uiTxt = k => conv(UI[k][0]);
+
+/* ---------- 注音／拼音顯示 ---------- */
+function phonHTML(py){
+  const m = pyMarked(py), z = pyToZy(py);
+  if(Settings.phon === 'pinyin') return esc(m);
+  if(Settings.phon === 'zhuyin') return esc(z);
+  return esc(m) + '<br>' + esc(z);
+}
+function rubyZh(zh, pyArr){
+  const chars = Array.from(zh);
+  if(Settings.phon === 'off' || !pyArr || pyArr.length !== chars.length) return esc(conv(zh));
+  return chars.map((c, i) => '<ruby>' + esc(conv(c)) + '<rt>' + phonHTML(pyArr[i]) + '</rt></ruby>').join('');
+}
+function segsHTML(segs){
+  return segs.map(s => s.pun ? '<span class="pun">' + esc(conv(s.zh)) + '</span>' : rubyZh(s.zh, s.py)).join('');
+}
+const transOf = ph => Settings.lang === 'es' ? ph.es : Settings.lang === 'en' ? ph.en : '';
+function itemName(id){ const it = ITEMS[id]; return rubyZh(it.zh, it.py.split(' ')); }
+function itemTr(id){ const it = ITEMS[id]; return Settings.lang === 'es' ? it.es : Settings.lang === 'en' ? it.en : ''; }
+
+/* ---------- 圖：角色與衣物（用程式畫）---------- */
+const SK = '#efd3b8', INK = '#3b3733';
+const LAYER = {
+  tee: () => '<g fill="#9db4c0"><rect x="66" y="86" width="68" height="94" rx="14"/><rect x="46" y="88" width="26" height="36" rx="11"/><rect x="128" y="88" width="26" height="36" rx="11"/></g><path d="M88,87 Q100,99 112,87" fill="none" stroke="#7f98a6" stroke-width="3"/>',
+  long: () => '<g fill="#c8927c"><rect x="66" y="86" width="68" height="94" rx="14"/><rect x="46" y="88" width="26" height="88" rx="11"/><rect x="128" y="88" width="26" height="88" rx="11"/></g><path d="M88,87 Q100,99 112,87" fill="none" stroke="#a87662" stroke-width="3"/>',
+  tank: () => '<path d="M74,88 L88,88 Q100,102 112,88 L126,88 L130,180 L70,180 Z" fill="#dcc99f"/>',
+  sweater: () => '<g fill="#a7b59a"><rect x="66" y="86" width="68" height="96" rx="14"/><rect x="46" y="88" width="26" height="88" rx="11"/><rect x="128" y="88" width="26" height="88" rx="11"/></g><g fill="#8e9d82"><rect x="64" y="170" width="72" height="12" rx="5"/><rect x="46" y="166" width="26" height="10" rx="4"/><rect x="128" y="166" width="26" height="10" rx="4"/><rect x="86" y="80" width="28" height="12" rx="6"/></g>',
+  jacket: () => '<g fill="#5f7487"><rect x="62" y="84" width="76" height="104" rx="12"/><rect x="42" y="86" width="28" height="92" rx="12"/><rect x="130" y="86" width="28" height="92" rx="12"/></g><path d="M100,96 L100,188" stroke="#46576a" stroke-width="3"/><path d="M82,84 L100,102 L118,84" fill="none" stroke="#46576a" stroke-width="4" stroke-linejoin="round"/>',
+  coat: () => '<g fill="#74604f"><rect x="58" y="82" width="84" height="134" rx="14"/><rect x="38" y="84" width="32" height="96" rx="14"/><rect x="130" y="84" width="32" height="96" rx="14"/></g><rect x="78" y="74" width="44" height="18" rx="8" fill="#5d4b3d"/><g stroke="#5d4b3d" stroke-width="3" fill="none"><path d="M60,120 H140 M60,152 H140 M60,184 H140 M100,92 V216"/></g>',
+  raincoat: () => '<g fill="#e2b94c"><rect x="58" y="82" width="84" height="134" rx="12"/><rect x="40" y="84" width="30" height="94" rx="13"/><rect x="130" y="84" width="30" height="94" rx="13"/></g><path d="M100,92 V216" stroke="#c99f33" stroke-width="3"/><g fill="#c99f33"><circle cx="106" cy="118" r="3"/><circle cx="106" cy="140" r="3"/><circle cx="106" cy="162" r="3"/></g><g fill="none" stroke="#c99f33" stroke-width="3"><rect x="66" y="168" width="24" height="26" rx="4"/><rect x="110" y="168" width="24" height="26" rx="4"/></g>',
+  shorts: () => '<g fill="#7f8f78"><rect x="74" y="172" width="26" height="52" rx="9"/><rect x="100" y="172" width="26" height="52" rx="9"/></g><rect x="74" y="168" width="52" height="9" rx="3" fill="#6c7a66"/>',
+  pants: () => '<g fill="#4d5968"><rect x="74" y="170" width="26" height="126" rx="9"/><rect x="100" y="170" width="26" height="126" rx="9"/></g><rect x="74" y="168" width="52" height="9" rx="3" fill="#3f4a58"/>',
+  skirt: () => '<path d="M74,170 L126,170 L142,236 Q100,248 58,236 Z" fill="#b87b6f"/><rect x="74" y="168" width="52" height="8" rx="3" fill="#a06a5f"/>',
+  sneakers: () => '<g stroke="' + INK + '" stroke-width="1.5"><rect x="68" y="290" width="34" height="17" rx="8" fill="#f4efe6"/><rect x="98" y="290" width="34" height="17" rx="8" fill="#f4efe6"/></g><g fill="' + INK + '"><rect x="68" y="302" width="34" height="6" rx="3"/><rect x="98" y="302" width="34" height="6" rx="3"/></g>',
+  sandals: () => '<g fill="#8a6a45"><rect x="70" y="302" width="30" height="6" rx="3"/><rect x="100" y="302" width="30" height="6" rx="3"/></g><g stroke="#a67c52" stroke-width="3" stroke-linecap="round"><path d="M76,296 H94 M78,300 H92 M106,296 H124 M108,300 H122"/></g>',
+  slippers: () => '<g fill="#6f95a3"><rect x="68" y="301" width="34" height="7" rx="3.5"/><rect x="98" y="301" width="34" height="7" rx="3.5"/></g><g fill="none" stroke="#6f95a3" stroke-width="5" stroke-linecap="round"><path d="M76,297 Q86,289 96,297"/><path d="M104,297 Q114,289 124,297"/></g>',
+  boots: () => '<g fill="#dcb445"><rect x="72" y="258" width="29" height="48" rx="8"/><rect x="99" y="258" width="29" height="48" rx="8"/></g><g fill="' + INK + '"><rect x="70" y="300" width="33" height="8" rx="3"/><rect x="97" y="300" width="33" height="8" rx="3"/></g><g stroke="#b99530" stroke-width="3"><path d="M72,266 H101 M99,266 H128"/></g>',
+  umbrella: () => '<path d="M160,64 L148,176" stroke="#5a5048" stroke-width="3" fill="none"/><path d="M148,176 q0,10 -8,7" stroke="#5a5048" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M108,70 Q160,14 212,70 Q196,60 186,70 Q173,60 160,70 Q147,60 134,70 Q121,60 108,70 Z" fill="#5d7f93"/><path d="M160,70 L160,36 M134,70 Q140,48 160,36 M186,70 Q180,48 160,36" stroke="#476678" stroke-width="2" fill="none"/>',
+  hat: () => '<ellipse cx="100" cy="40" rx="38" ry="8" fill="#a99870"/><path d="M76,40 Q100,8 124,40 Z" fill="#c2b08a"/><path d="M78,36 Q100,42 122,36" stroke="#8f7f5a" stroke-width="3" fill="none"/>',
+  scarf: () => '<rect x="82" y="76" width="36" height="16" rx="7" fill="#b0584a"/><rect x="104" y="86" width="13" height="36" rx="5" fill="#9b4a3d"/>',
+  gloves: () => '<g fill="#b0584a"><circle cx="58" cy="177" r="9"/><circle cx="142" cy="177" r="9"/></g>',
+  mask: () => '<rect x="84" y="57" width="32" height="19" rx="7" fill="#f4f4f0" stroke="#bdbdb6" stroke-width="1.5"/><path d="M84,62 L78,56 M116,62 L122,56" stroke="#bdbdb6" stroke-width="1.5"/><path d="M90,64 H110 M90,69 H110" stroke="#d6d6cf" stroke-width="1.2"/>',
+  shades: () => '<g fill="#2d2a27"><rect x="82" y="46" width="16" height="11" rx="4"/><rect x="102" y="46" width="16" height="11" rx="4"/></g><path d="M98,50 H102 M82,49 L76,47 M118,49 L124,47" stroke="#2d2a27" stroke-width="2"/>',
+  sunscreen: () => '<rect x="48" y="160" width="20" height="32" rx="5" fill="#f4efe6" stroke="#a89e86" stroke-width="1.5"/><rect x="52" y="151" width="12" height="11" rx="2" fill="#7d8a73"/><circle cx="58" cy="176" r="5" fill="#e6c36a"/>'
+};
+const ICON_VB = {tee:'40 80 120 106', long:'40 80 120 106', tank:'40 80 120 106', sweater:'40 80 120 106', jacket:'34 76 132 118', coat:'30 70 140 150', raincoat:'30 78 140 142',
+  shorts:'64 164 72 64', pants:'64 164 72 140', skirt:'54 164 92 86', sneakers:'62 284 76 30', sandals:'62 284 76 30', slippers:'62 284 76 30', boots:'62 254 76 58',
+  umbrella:'100 8 120 184', hat:'58 8 84 44', scarf:'72 70 56 58', gloves:'44 160 112 36', mask:'70 50 60 32', shades:'66 38 68 28', sunscreen:'40 146 36 52'};
+function iconSVG(id){
+  if(id === 'gloves') return '<svg viewBox="0 0 80 50"><g fill="#b0584a"><path d="M10,40 V20 q0,-6 5,-6 q5,0 5,6 V12 q0,-6 5,-6 q5,0 5,6 V12 q0,-5 5,-5 q5,0 5,5 V40 q0,6 -6,6 H16 q-6,0 -6,-6 Z"/><path d="M45,40 V22 q0,-6 5,-6 q5,0 5,6 V14 q0,-6 5,-6 q5,0 5,6 V40 q0,6 -6,6 H51 q-6,0 -6,-6 Z" opacity=".9"/></g></svg>';
+  return '<svg viewBox="' + ICON_VB[id] + '" preserveAspectRatio="xMidYMid meet">' + LAYER[id]() + '</svg>';
+}
+function headSVG(g, mood){
+  const hair = g === 'boy'
+    ? '<path d="M73,50 Q72,22 100,21 Q128,22 127,50 Q118,34 100,34 Q82,34 73,50 Z" fill="#3b322c"/>'
+    : '<path d="M71,58 Q68,20 100,20 Q132,20 129,58 L129,76 Q122,78 120,68 L120,46 Q100,38 80,46 L80,68 Q78,78 71,76 Z" fill="#3b322c"/>';
+  let face = '';
+  const dots = '<circle cx="91" cy="53" r="2.8" fill="' + INK + '"/><circle cx="109" cy="53" r="2.8" fill="' + INK + '"/>';
+  if(mood === 'happy') face = '<path d="M87,54 Q91,48 95,54 M105,54 Q109,48 113,54" stroke="' + INK + '" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M91,62 Q100,73 109,62 Z" fill="#c9776a" stroke="' + INK + '" stroke-width="1.5" stroke-linejoin="round"/><ellipse cx="84" cy="62" rx="5" ry="3" fill="#e8a79a" opacity=".7"/><ellipse cx="116" cy="62" rx="5" ry="3" fill="#e8a79a" opacity=".7"/>';
+  else if(mood === 'cold') face = dots + '<path d="M91,66 q4,-4 8,0 t8,0" stroke="' + INK + '" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="84" cy="61" rx="5" ry="3" fill="#8fb5d4" opacity=".8"/><ellipse cx="116" cy="61" rx="5" ry="3" fill="#8fb5d4" opacity=".8"/><path d="M62,34 l-7,-4 M60,50 l-9,0 M138,34 l7,-4 M140,50 l9,0" stroke="#7fa2bd" stroke-width="2.4" stroke-linecap="round"/>';
+  else if(mood === 'hot') face = dots + '<ellipse cx="100" cy="65" rx="4" ry="4.5" fill="#c9776a" stroke="' + INK + '" stroke-width="1.5"/><ellipse cx="84" cy="61" rx="5" ry="3" fill="#e08c7c" opacity=".85"/><ellipse cx="116" cy="61" rx="5" ry="3" fill="#e08c7c" opacity=".85"/><path d="M132,36 q-5,8 0,11 q5,-3 0,-11z" fill="#8fc1e3"/><path d="M68,44 q-5,8 0,11 q5,-3 0,-11z" fill="#8fc1e3"/>';
+  else if(mood === 'wet') face = dots + '<path d="M93,67 Q100,61 107,67" stroke="' + INK + '" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M88,47 l8,-3 M112,47 l-8,-3" stroke="' + INK + '" stroke-width="2" stroke-linecap="round"/><g fill="#8fc1e3"><path d="M78,10 q-4,7 0,9 q4,-2 0,-9z"/><path d="M100,2 q-4,7 0,9 q4,-2 0,-9z"/><path d="M122,10 q-4,7 0,9 q4,-2 0,-9z"/></g>';
+  else if(mood === 'sad') face = dots + '<path d="M93,67 Q100,61 107,67" stroke="' + INK + '" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M86,48 l10,-4 M114,48 l-10,-4" stroke="' + INK + '" stroke-width="2" stroke-linecap="round"/>';
+  else face = dots + '<path d="M93,64 Q100,69 107,64" stroke="' + INK + '" stroke-width="2" fill="none" stroke-linecap="round"/>';
+  return '<circle cx="100" cy="52" r="27" fill="' + SK + '"/>' + face + hair;
+}
+function bodySVG(){
+  return '<rect x="92" y="74" width="16" height="16" fill="' + SK + '"/>'
+    + '<rect x="68" y="86" width="64" height="92" rx="16" fill="' + SK + '"/>'
+    + '<rect x="50" y="90" width="16" height="82" rx="8" fill="' + SK + '"/><rect x="134" y="90" width="16" height="82" rx="8" fill="' + SK + '"/>'
+    + '<circle cx="58" cy="176" r="8" fill="' + SK + '"/><circle cx="142" cy="176" r="8" fill="' + SK + '"/>'
+    + '<rect x="76" y="172" width="22" height="124" rx="10" fill="' + SK + '"/><rect x="102" y="172" width="22" height="124" rx="10" fill="' + SK + '"/>'
+    + '<ellipse cx="86" cy="302" rx="14" ry="7" fill="' + SK + '"/><ellipse cx="114" cy="302" rx="14" ry="7" fill="' + SK + '"/>'
+    + '<rect x="75" y="170" width="50" height="16" rx="6" fill="#d2cabb"/>';
+}
+function charSVG(g, o, mood){
+  const acc = o.acc || [], L = [];
+  if(o.outer === 'raincoat') L.push('<circle cx="100" cy="54" r="35" fill="#e2b94c"/><path d="M74,78 Q100,98 126,78 L130,92 L70,92 Z" fill="#e2b94c"/>');
+  L.push(bodySVG());
+  if(o.bottom) L.push(LAYER[o.bottom]());
+  if(o.shoes) L.push(LAYER[o.shoes]());
+  if(o.top) L.push(LAYER[o.top]());
+  if(o.outer) L.push(LAYER[o.outer]());
+  L.push(headSVG(g, mood));
+  if(o.outer === 'raincoat') L.push('<path d="M67,58 Q66,22 100,21 Q134,22 133,58" fill="none" stroke="#c99f33" stroke-width="6" stroke-linecap="round"/>');
+  ['hat', 'shades', 'mask', 'scarf', 'gloves', 'umbrella', 'sunscreen'].forEach(id => { if(acc.includes(id)) L.push(LAYER[id]()); });
+  return '<svg viewBox="0 0 240 322" role="img" aria-label="character"><g transform="translate(20,0)">' + L.join('') + '</g></svg>';
+}
+const EMPTY = () => ({top:null, outer:null, bottom:null, shoes:null, acc:[]});
+const DEFAULT_OUTFIT = {top:'tee', outer:null, bottom:'pants', shoes:'sneakers', acc:[]};
+
+/* ---------- 圖：天氣、裝置 ---------- */
+function weatherIcon(sky, air){
+  const sun = '<circle cx="24" cy="24" r="9" fill="#e6b84a"/><g stroke="#e6b84a" stroke-width="3" stroke-linecap="round"><path d="M24 6v5M24 37v5M6 24h5M37 24h5M11 11l3.5 3.5M33.5 33.5L37 37M37 11l-3.5 3.5M14.5 33.5L11 37"/></g>';
+  const cloud = (c) => '<path d="M14 36h22a8 8 0 0 0 .6-15.97A11 11 0 0 0 15.4 22 7 7 0 0 0 14 36z" fill="' + c + '"/>';
+  let inner = '';
+  if(sky === 'sunny') inner = sun;
+  else if(sky === 'cloudy') inner = '<circle cx="17" cy="16" r="7" fill="#e6b84a"/>' + cloud('#b9c2c7');
+  else if(sky === 'overcast') inner = cloud('#9aa4aa');
+  else if(sky === 'rainy') inner = cloud('#8d9aa2').replace('M14 36', 'M14 30') + '<g stroke="#4f86a8" stroke-width="3" stroke-linecap="round"><path d="M17 36l-2 6M26 36l-2 6M35 36l-2 6"/></g>';
+  else if(sky === 'typhoon') inner = '<g fill="none" stroke="#5d7f93" stroke-width="3.2" stroke-linecap="round"><path d="M24 24m-3 0a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"/><path d="M24 24 m-8 0 a8 8 0 0 1 8 -8 a12 12 0 0 1 12 12"/><path d="M24 24 m8 0 a8 8 0 0 1 -8 8 a12 12 0 0 1 -12 -12"/></g>';
+  let extra = air ? '<g stroke="#8a7f6a" stroke-width="2.5" stroke-linecap="round"><path d="M6 42h14M24 42h18M10 46h26" opacity=".8"/></g>' : '';
+  return '<svg viewBox="0 0 48 48">' + inner + extra + '</svg>';
+}
+function deviceSVG(fmt){
+  if(fmt === 'news') return '<svg viewBox="0 0 80 80"><rect x="6" y="14" width="68" height="46" rx="6" fill="#3b3733"/><rect x="11" y="19" width="58" height="34" rx="3" fill="#c7d9df"/><circle cx="26" cy="30" r="6" fill="#7d93a0"/><path d="M14 53 q12 -18 24 0z" fill="#7d93a0"/><rect x="44" y="24" width="20" height="12" rx="2" fill="#f7f2e8"/><rect x="11" y="46" width="58" height="7" fill="#b4694f" opacity=".85"/><rect x="28" y="62" width="24" height="5" rx="2" fill="#3b3733"/></svg>';
+  if(fmt === 'phone') return '<svg viewBox="0 0 80 80"><rect x="22" y="6" width="36" height="68" rx="7" fill="#3b3733"/><rect x="26" y="14" width="28" height="52" rx="3" fill="#dfe6e3"/><rect x="28" y="20" width="24" height="16" rx="3" fill="#f7f2e8"/><circle cx="33" cy="28" r="3.5" fill="#4f86a8"/><rect x="39" y="24" width="11" height="2.5" rx="1" fill="#9a9488"/><rect x="39" y="29" width="8" height="2.5" rx="1" fill="#9a9488"/></svg>';
+  if(fmt === 'push') return '<svg viewBox="0 0 80 80"><rect x="6" y="18" width="68" height="40" rx="8" fill="#f7f2e8" stroke="#3b3733" stroke-width="2.5"/><rect x="6" y="18" width="10" height="40" rx="5" fill="#b4694f"/><path d="M40 28a8 8 0 0 0 -8 8v5l-3 4h22l-3 -4v-5a8 8 0 0 0 -8 -8z" fill="#3b3733"/><circle cx="40" cy="49" r="2.6" fill="#3b3733"/><circle cx="53" cy="27" r="4.5" fill="#b4694f"/></svg>';
+  return '<svg viewBox="0 0 80 80"><circle cx="20" cy="26" r="11" fill="#c9b99b"/><circle cx="20" cy="23" r="4" fill="#f7f2e8"/><path d="M12 33 q8 -8 16 0" fill="#f7f2e8"/><rect x="34" y="14" width="40" height="26" rx="9" fill="#a9c9a0"/><path d="M34 34 l-6 8 l12 -4z" fill="#a9c9a0"/><g fill="#3b3733"><circle cx="46" cy="27" r="2.4"/><circle cx="54" cy="27" r="2.4"/><circle cx="62" cy="27" r="2.4"/></g><rect x="22" y="48" width="42" height="18" rx="8" fill="#f7f2e8" stroke="#c4b9a2" stroke-width="2"/></svg>';
+}
+
+/* ---------- 聲音 ---------- */
+let VOICE = null;
+const isMandarin = v => { const l = String((v && v.lang) || '').toLowerCase().replace(/_/g, '-'); if(l.indexOf('yue') === 0 || l.indexOf('zh-hk') === 0) return false; return l === 'zh' || l.indexOf('zh-') === 0 || l.indexOf('cmn') === 0; };
+function pickVoice(){
+  try{
+    const ok = (speechSynthesis.getVoices() || []).filter(isMandarin);
+    VOICE = ok.find(v => /zh[-_]tw/i.test(v.lang)) || ok.find(v => /tw|taiwan|臺灣|台灣/i.test(v.name)) || ok[0] || null;
+  }catch(e){}
+}
+function speak(text){
+  try{
+    if(!window.speechSynthesis) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'zh-TW'; if(VOICE) u.voice = VOICE;
+    u.rate = RATE_VALUE[Settings.rate] || 0.65;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+try{ pickVoice(); speechSynthesis.addEventListener('voiceschanged', pickVoice); }catch(e){}
+let AC = null;
+function beep(freqs, dur){
+  try{
+    AC = AC || new (window.AudioContext || window.webkitAudioContext)();
+    const t = AC.currentTime;
+    freqs.forEach((f, i) => {
+      const o = AC.createOscillator(), g = AC.createGain();
+      o.type = 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t + i * dur);
+      g.gain.exponentialRampToValueAtTime(0.16, t + i * dur + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + i * dur + dur);
+      o.connect(g); g.connect(AC.destination); o.start(t + i * dur); o.stop(t + i * dur + dur + 0.03);
+    });
+  }catch(e){}
+}
+const sfxOk = () => beep([660, 880], 0.14), sfxBad = () => beep([220, 170], 0.18);
+
+/* ---------- 狀態 ---------- */
+const G = {char: lsGet('hg.weather.char') === 'girl' ? 'girl' : 'boy', level: 1, name: lsGet('hg.weather.name') || '', round: 0, score: 0, deck: [], scn: null, phrase: null,
+  outfit: EMPTY(), phase: 'dress', attempts: 0, peeked: false, revealed: false, mood: 'idle', tab: 'top', lastType: null, results: [], t0: 0, friend: 0};
+const show = id => ['sStart', 'sPlay', 'sEnd'].forEach(s => $(s).classList.toggle('hidden', s !== id));
+let CUR = 'sStart';
+function go(id){ CUR = id; show(id); window.scrollTo(0, 0); }
+
+/* ---------- 首頁 ---------- */
+function renderStart(){
+  const lvDesc = n => ui('l' + n + 'd');
+  const levels = [1, 2, 3].map(n => '<button class="btn lv" data-lv="' + n + '" style="text-align:left;' + (G.level === n ? 'background:var(--sel);border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset' : 'border-color:var(--line)') + '"><span class="n">' + n + '</span><span>' + lvDesc(n) + '</span></button>').join('');
+  $('sStart').innerHTML =
+    '<h1>' + conv('今天穿什麼？') + '</h1>' + '<p class="sub">' + (Settings.lang === 'zh' ? esc(conv('聽天氣預報，幫角色選衣服')) : esc(Settings.lang === 'es' ? '¿Qué me pongo hoy? Escucha el pronóstico y viste al personaje.' : 'What should I wear today? Listen to the forecast and dress the character.')) + '</p>'
+    + '<div class="card"><div class="sect">' + ui('pickChar') + '</div><div class="row">'
+    + ['boy', 'girl'].map(g => '<button class="choice ' + (G.char === g ? 'on' : '') + '" data-char="' + g + '">' + charSVG(g, DEFAULT_OUTFIT, 'happy') + '<div>' + ui(g) + '</div></button>').join('') + '</div>'
+    + '<div class="sect">' + ui('pickLevel') + '</div>' + levels
+    + '<div class="sect">' + ui('nick') + '</div><input type="text" id="inName" maxlength="14" autocomplete="off" placeholder="' + esc(Settings.lang === 'zh' ? uiTxt('nickph') : (Settings.lang === 'es' ? UI.nickph[1] : UI.nickph[2])) + '" value="' + esc(G.name) + '">'
+    + '<div style="margin-top:12px"><button class="btn main" id="bStart" style="width:100%">' + ui('start') + '</button></div>'
+    + '<div class="links"><button class="btn ghost" id="bBoard">🏆 ' + ui('board', {notr: true}) + '</button><button class="btn ghost" id="bSet">⚙ ' + ui('settings', {notr: true}) + '</button></div></div>';
+  $('sStart').querySelectorAll('[data-char]').forEach(b => b.onclick = () => { G.char = b.dataset.char; lsSet('hg.weather.char', G.char); renderStart(); });
+  $('sStart').querySelectorAll('[data-lv]').forEach(b => b.onclick = () => { G.level = +b.dataset.lv; renderStart(); });
+  $('inName').oninput = e => { G.name = e.target.value.slice(0, 14); lsSet('hg.weather.name', G.name); };
+  $('bStart').onclick = startGame;
+  $('bBoard').onclick = openBoard;
+  $('bSet').onclick = openSettings;
+}
+
+/* ---------- 遊戲 ---------- */
+function startGame(){
+  G.round = 0; G.score = 0; G.results = []; G.lastType = null; G.t0 = Date.now();
+  const f = []; while(f.length < ROUNDS) f.push(...FORMATS.slice().sort(() => Math.random() - 0.5));
+  G.deck = f.slice(0, ROUNDS);
+  try{ window.HGPlays && HGPlays.start('L' + G.level, G.name); }catch(e){}
+  nextRound();
+}
+function nextRound(){
+  G.round++;
+  G.scn = genScenario(G.level, G.deck[G.round - 1], G.lastType); G.lastType = G.scn.type;
+  G.phrase = say(G.scn);
+  G.friend = rint(0, FRIEND_NAMES.length - 1);
+  G.outfit = EMPTY(); G.phase = 'dress'; G.attempts = 0; G.peeked = false; G.revealed = false; G.mood = 'idle'; G.tab = 'top';
+  buildPlay(); go('sPlay');
+  setTimeout(playPhrase, 450);
+}
+const spoken = () => G.phrase.segs.map(s => s.zh).join('');
+function playPhrase(){ speak(spoken()); }
+function tabKey(s){ return {top:'tTop', outer:'tOuter', bottom:'tBottom', shoes:'tShoes', acc:'tAcc'}[s]; }
+function buildPlay(){
+  const f = FMT_LABEL[G.scn.fmt];
+  const fl = rubyZh(f[0][0], f[0][1].split(' '));
+  const ftr = Settings.lang === 'es' ? T_ES[f[1]] : Settings.lang === 'en' ? T_EN[f[1]] : '';
+  $('sPlay').innerHTML =
+    '<div class="topbar"><span class="pill">' + (Settings.lang === 'zh' ? '' : '') + esc(conv('第')) + ' ' + G.round + ' / ' + ROUNDS + '</span><span class="pill">⭐ <span id="scoreNow">' + G.score + '</span></span><span class="sp"></span><button class="iconbtn" id="bHome" aria-label="home">⌂</button><button class="iconbtn" id="bSet2" aria-label="settings">⚙</button></div>'
+    + '<div class="play-wrap"><div><div class="card frame"><div class="dev">' + deviceSVG(G.scn.fmt) + '</div><div class="info"><span class="chip">' + fl + '</span>' + (ftr ? '<small class="tr" style="margin:-3px 0 6px">' + esc(ftr) + '</small>' : '')
+    + '<div class="acts"><button class="btn main" id="bListen">🔊 ' + ui('again', {notr: true}) + '</button><button class="btn" id="bPeek">👁 ' + ui('peek', {notr: true}) + '</button></div></div></div>'
+    + '<div id="say"></div><div class="stage" id="stage"></div></div>'
+    + '<div><div class="tabs" id="tabs"></div><div class="grid" id="grid"></div><div class="msg" id="msg"></div><div class="actions" id="actions"></div></div></div>';
+  $('bListen').onclick = playPhrase;
+  $('bPeek').onclick = () => { if(G.phase === 'done') return; G.peeked = true; renderSay(); };
+  $('bHome').onclick = () => { try{ speechSynthesis.cancel(); }catch(e){} renderStart(); go('sStart'); };
+  $('bSet2').onclick = openSettings;
+  renderSay(); renderStage(); renderTabs(); renderGrid(); renderMsg(null); renderActions();
+}
+function renderSay(){
+  const box = $('say'); if(!box) return;
+  const showTxt = G.revealed || G.peeked;
+  if(!showTxt){ box.innerHTML = ''; return; }
+  const ph = G.phrase, scn = G.scn;
+  let html = '<div class="card" style="margin-top:8px"><div class="say">' + segsHTML(ph.segs) + (transOf(ph) ? '<div class="trl">' + esc(transOf(ph)) + '</div>' : '') + '</div>';
+  if(G.revealed){
+    html += '<div class="wicons">' + scn.periods.map(p => '<span class="wi">' + weatherIcon(p.sky, p.air) + '<span>' + (p.when ? esc(conv({morning:'早上', afternoon:'下午', evening:'晚上'}[p.when])) + ' ' : '') + p.t + '°C' + (scn.level > 1 && (p.sky === 'rainy' || p.sky === 'typhoon') ? ' · ' + p.prob + '%' : '') + '</span></span>').join('') + '</div>';
+  }
+  if(scn.fmt === 'friend'){
+    const n = FRIEND_NAMES[G.friend];
+    html = html.replace('<div class="say">', '<div style="font-size:.9rem;color:var(--ink2)">' + esc(conv('來自')) + ' ' + segsHTML(n.segs) + '</div><div class="say">');
+  }
+  box.innerHTML = html + '</div>';
+}
+function renderStage(){
+  const st = $('stage'); if(!st) return;
+  st.className = 'stage' + (G.mood === 'cold' ? ' shiver' : G.mood === 'happy' ? ' hop' : '');
+  st.innerHTML = charSVG(G.char, G.outfit, G.mood);
+}
+function renderTabs(){
+  $('tabs').innerHTML = SLOTS.map(s => {
+    const worn = s === 'acc' ? G.outfit.acc.length > 0 : !!G.outfit[s];
+    return '<button class="tab ' + (G.tab === s ? 'on' : '') + '" data-tab="' + s + '">' + ui(tabKey(s)) + (worn ? '<span class="dot" style="background:' + (G.tab === s ? '#fff' : 'var(--accent)') + '"></span>' : '') + '</button>';
+  }).join('');
+  $('tabs').querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { G.tab = b.dataset.tab; renderTabs(); renderGrid(); });
+}
+function isWorn(id){ const it = ITEMS[id]; return it.slot === 'acc' ? G.outfit.acc.includes(id) : G.outfit[it.slot] === id; }
+function renderGrid(){
+  $('grid').innerHTML = BY_SLOT[G.tab].map(id => '<button class="item ' + (isWorn(id) ? 'on' : '') + '" data-id="' + id + '">' + iconSVG(id) + '<div>' + itemName(id) + '</div>' + (itemTr(id) ? '<small class="tr">' + esc(itemTr(id)) + '</small>' : '') + '</button>').join('');
+  $('grid').querySelectorAll('[data-id]').forEach(b => b.onclick = () => onItem(b.dataset.id));
+}
+function onItem(id){
+  if(G.phase === 'done') return;
+  const it = ITEMS[id];
+  speak(it.zh);
+  if(it.slot === 'acc'){ const i = G.outfit.acc.indexOf(id); if(i >= 0) G.outfit.acc.splice(i, 1); else G.outfit.acc.push(id); }
+  else G.outfit[it.slot] = G.outfit[it.slot] === id ? null : id;
+  if(G.mood !== 'idle'){ G.mood = 'idle'; }
+  if(G.phase === 'wrong') renderMsg(null);
+  renderStage(); renderTabs(); renderGrid();
+}
+function msgHTML(kind, parts){
+  return '<div class="msgbox ' + kind + '">' + parts.map(m => segsHTML(m.segs) + (transOf(m) ? '<div class="trl">' + esc(transOf(m)) + '</div>' : '')).join('<div style="height:4px"></div>') + '</div>';
+}
+function renderMsg(html){ const m = $('msg'); if(m) m.innerHTML = html || ''; }
+function renderActions(){
+  const a = $('actions'); if(!a) return;
+  if(G.phase === 'done') a.innerHTML = '<button class="btn main" id="bNext">' + ui(G.round >= ROUNDS ? 'finish' : 'next') + '</button>';
+  else a.innerHTML = '<button class="btn main" id="bGo">🚪 ' + ui('go') + '</button>';
+  if($('bNext')) $('bNext').onclick = () => G.round >= ROUNDS ? endGame() : nextRound();
+  if($('bGo')) $('bGo').onclick = onGo;
+}
+function onGo(){
+  if(G.phase === 'done') return;
+  const P = check(G.outfit, G.scn);
+  G.revealed = false;
+  if(!P.length){
+    const pts = Math.max(0, (G.attempts === 0 ? 10 : 6) - (G.peeked ? 3 : 0));
+    G.score += pts; G.results.push(pts); G.phase = 'done'; G.revealed = true; G.mood = 'happy'; sfxOk();
+    renderMsg(msgHTML('ok', [pick(OKMSG)()]) + '<div class="big" style="font-size:1.3rem">+' + pts + ' ' + esc(Settings.lang === 'zh' ? conv('分') : (Settings.lang === 'es' ? 'pts' : 'pts')) + '</div>');
+  } else if(G.attempts === 0){
+    G.attempts = 1; G.phase = 'wrong'; sfxBad();
+    const first = P.find(x => MOOD_OF[x]);
+    G.mood = first ? MOOD_OF[first] : 'sad';
+    renderMsg(msgHTML('bad', P.slice(0, 2).map(c => MSG[c]())) + '<div style="margin-top:6px;color:var(--ink2);font-size:.9rem">' + (Settings.lang === 'es' ? 'Cambia la ropa y vuelve a intentarlo.' : Settings.lang === 'en' ? 'Change your outfit and try again.' : esc(conv('換一換，再試一次。'))) + '</div>');
+  } else {
+    sfxBad();
+    const sol = solve(G.scn);
+    if(sol) G.outfit = {top: sol.top, outer: sol.outer, bottom: sol.bottom, shoes: sol.shoes, acc: sol.acc.slice()};
+    G.score += 0; G.results.push(0); G.phase = 'done'; G.revealed = true; G.mood = 'sad';
+    renderMsg('<div class="msgbox info"><b>' + ui('answer', {notr: true}) + '</b>' + (Settings.lang === 'zh' ? '' : '<small class="tr">' + esc(Settings.lang === 'es' ? UI.answer[1] : UI.answer[2]) + '</small>') + '</div>');
+    setTimeout(() => { G.mood = 'happy'; renderStage(); }, 700);
+  }
+  $('scoreNow').textContent = G.score;
+  renderSay(); renderStage(); renderTabs(); renderGrid(); renderActions();
+}
+
+/* ---------- 結束 ---------- */
+function endGame(){
+  const total = G.score * G.level;
+  try{ window.HGPlays && HGPlays.end({score: total, secs: Math.round((Date.now() - G.t0) / 1000), name: G.name}); }catch(e){}
+  const best = +(lsGet('hg.weather.best') || 0); if(total > best) lsSet('hg.weather.best', String(total));
+  $('sEnd').innerHTML = '<div class="card" style="margin-top:14px;text-align:center"><h1 style="margin-top:0">' + ui('done') + '</h1><div style="color:var(--ink2)">' + esc(conv('第' + ['一', '二', '三'][G.level - 1] + '關')) + ' · ' + G.score + ' / ' + (ROUNDS * 10) + '</div><div class="big">' + total + '</div><div>' + ui('score') + '</div>'
+    + '<div id="saveNote" style="margin:10px 0;color:var(--ink2);min-height:1.4em">' + esc(uiTxt('loading')) + '</div>'
+    + '<div class="row"><button class="btn main" id="bAgain" style="flex:1">' + ui('again2') + '</button></div><div class="links"><button class="btn ghost" id="bB2">🏆 ' + ui('board', {notr: true}) + '</button><button class="btn ghost" id="bH2">⌂ ' + ui('home', {notr: true}) + '</button></div></div>';
+  $('bAgain').onclick = startGame; $('bB2').onclick = openBoard; $('bH2').onclick = () => { renderStart(); go('sStart'); };
+  go('sEnd');
+  submitScore(G.name || '玩家', total).then(ok => { const n = $('saveNote'); if(n) n.textContent = ok ? uiTxt('saved') : uiTxt('saveFail'); });
+}
+
+/* ---------- 設定視窗 ---------- */
+function openModal(html){ $('sheet').innerHTML = html; $('modal').classList.remove('hidden'); }
+function closeModal(){ $('modal').classList.add('hidden'); }
+$('modal').addEventListener('click', e => { if(e.target.id === 'modal') closeModal(); });
+function openSettings(){
+  const seg = (k, opts) => '<div class="seg">' + opts.map(o => '<button class="' + (Settings[k] === o ? 'on' : '') + '" data-k="' + k + '" data-v="' + o + '">' + ui(o === 'zh' ? 'zhOnly' : o, {notr: true}) + '</button>').join('') + '</div>';
+  openModal('<h2 style="margin:0 0 6px">' + ui('settings', {notr: true}) + '</h2>'
+    + '<div class="sect">' + ui('sScript', {notr: true}) + '</div>' + seg('script', ['trad', 'simp'])
+    + '<div class="sect">' + ui('sLang', {notr: true}) + '</div>' + seg('lang', ['es', 'en', 'zh'])
+    + '<div class="sect">' + ui('sPhon', {notr: true}) + '</div>' + seg('phon', ['pinyin', 'zhuyin', 'both', 'off'])
+    + '<div class="sect">' + ui('sRate', {notr: true}) + '</div>' + seg('rate', ['slow', 'normal', 'fast'])
+    + '<button class="btn main" id="bClose" style="width:100%;margin-top:6px">' + ui('close', {notr: true}) + '</button>');
+  $('sheet').querySelectorAll('[data-k]').forEach(b => b.onclick = () => { Settings[b.dataset.k] = b.dataset.v; writeSettings(Settings); openSettings(); rerender(); });
+  $('bClose').onclick = closeModal;
+}
+function applyPhon(){ document.body.dataset.phon = Settings.phon; }
+applyPhon();
+function rerender(){ applyPhon();
+  if(CUR === 'sStart') renderStart();
+  else if(CUR === 'sPlay'){ buildPlay(); }
+}
+
+/* ---------- 排行榜 ---------- */
+const FB = {ready: null, lib: null};
+function fbReady(){
+  if(FB.ready) return FB.ready;
+  FB.ready = (async () => {
+    const CDN = 'https://www.gstatic.com/firebasejs/10.12.2/';
+    const A = await import(CDN + 'firebase-app.js'), Au = await import(CDN + 'firebase-auth.js'), F = await import(CDN + 'firebase-firestore.js');
+    const app = A.initializeApp(FB_CFG, 'wo'); const auth = Au.getAuth(app);
+    if(!auth.currentUser) await Au.signInAnonymously(auth); else await auth.authStateReady();
+    FB.lib = {F, db: F.getFirestore(app), uid: auth.currentUser.uid};
+    return FB.lib;
+  })().catch(() => { FB.ready = null; return null; });
+  return FB.ready;
+}
+async function submitScore(name, score){
+  try{
+    const L = await fbReady(); if(!L) return false;
+    const ref = L.F.doc(L.db, BOARD, L.uid);
+    const snap = await L.F.getDoc(ref);
+    if(snap.exists() && snap.data().score >= score) return true;
+    await L.F.setDoc(ref, {name: String(name).slice(0, 14), score: score, updatedAt: L.F.serverTimestamp()});
+    return true;
+  }catch(e){ return false; }
+}
+async function loadBoard(){
+  const L = await fbReady(); if(!L) return null;
+  const q = L.F.query(L.F.collection(L.db, BOARD), L.F.orderBy('score', 'desc'), L.F.limit(10));
+  const s = await L.F.getDocs(q);
+  return s.docs.map(d => ({id: d.id, name: d.data().name, score: d.data().score, me: d.id === L.uid}));
+}
+async function openBoard(){
+  openModal('<h2 style="margin:0">🏆 ' + ui('board', {notr: true}) + '</h2><div style="color:var(--ink2);font-size:.9rem">' + ui('top10', {notr: true}) + '</div><div id="lbBody" style="margin:8px 0">' + esc(uiTxt('loading')) + '</div><button class="btn main" id="bClose" style="width:100%">' + ui('close', {notr: true}) + '</button>');
+  $('bClose').onclick = closeModal;
+  let rows = null; try{ rows = await loadBoard(); }catch(e){}
+  const b = $('lbBody'); if(!b) return;
+  if(!rows){ b.textContent = uiTxt('saveFail'); return; }
+  if(!rows.length){ b.textContent = uiTxt('empty'); return; }
+  b.innerHTML = '<table class="lb">' + rows.map((r, i) => '<tr class="' + (r.me ? 'me' : '') + '"><td>' + (i + 1) + '</td><td>' + esc(r.name) + '</td><td>' + esc(r.score) + '</td></tr>').join('') + '</table>';
+}
+
+/* ---------- 開始 ---------- */
+renderStart();
+window.__WO = {G, check, say, genScenario, solve, ITEMS};
+</script>
+
+<!-- ============ 每天一分鐘遊戲共用零件（來自 game-kit/parts）============ -->
+<script>
+/* ===== 找不到中文聲音的提示 ===== */
+(function(){
+  var shown=false;
+  function cfg(){ var s={}; try{ s=JSON.parse(localStorage.getItem('hanziGames.settings')||'{}')||{}; }catch(e){} return s; }
+  function isMandarin(v){ var l=String((v&&v.lang)||'').toLowerCase().replace(/_/g,'-'); if(l.indexOf('yue')===0||l.indexOf('zh-hk')===0) return false; return l==='zh'||l.indexOf('zh-')===0||l.indexOf('cmn')===0; }
+  var T={
+    none:{ zh:['這個裝置找不到中文（台灣）語音，聽不到念的內容。請到手機設定安裝「中文（台灣）」語音，或換一個裝置。','这个装置找不到中文（台湾）语音，听不到念的内容。请到手机设置安装「中文（台湾）」语音，或换一个装置。'],
+           es:'No se encontró una voz de chino (Taiwán) en este dispositivo, así que no se oirá el audio. Instala la voz «chino (Taiwán)» en los ajustes del móvil o usa otro dispositivo.',
+           en:'No Chinese (Taiwan) voice was found on this device, so you won’t hear the audio. Install the “Chinese (Taiwan)” voice in your phone settings, or use another device.' },
+    nosynth:{ zh:['這個瀏覽器不支援語音，聽不到念的內容。請換一個瀏覽器（例如 Chrome、Safari）。','这个浏览器不支持语音，听不到念的内容。请换一个浏览器（例如 Chrome、Safari）。'],
+           es:'Este navegador no admite voz, así que no se oirá el audio. Usa otro navegador (por ejemplo Chrome o Safari).',
+           en:'This browser does not support speech, so you won’t hear the audio. Try another browser (for example Chrome or Safari).' }
+  };
+  function show(kind){
+    if(shown||document.getElementById('hgVoiceHint')) return; shown=true;
+    var s=cfg(), lang=s.lang||'es', simp=s.script==='simp', t=T[kind];
+    var st=document.createElement('style');
+    st.textContent='#hgVoiceHint{position:fixed;left:50%;top:8px;transform:translateX(-50%);z-index:2147482999;width:min(94vw,520px);box-sizing:border-box;display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:12px;background:#fff6dc;border:1px solid #d8b24a;color:#5b4410;font:13px/1.4 system-ui,-apple-system,"Noto Sans TC","PingFang TC",sans-serif;box-shadow:0 2px 10px rgba(0,0,0,.25)}#hgVoiceHint .m{flex:1}#hgVoiceHint .m small{display:block;font-size:11px;opacity:.85;margin-top:2px}#hgVoiceHint button{border:0;background:transparent;color:inherit;font-size:16px;line-height:1;padding:0 2px;cursor:pointer}';
+    document.head.appendChild(st);
+    var d=document.createElement('div'); d.id='hgVoiceHint'; d.setAttribute('role','status');
+    var m=document.createElement('div'); m.className='m';
+    var zh=document.createElement('div'); zh.textContent = simp ? t.zh[1] : t.zh[0]; m.appendChild(zh);
+    if(lang!=='zh'){ var sm=document.createElement('small'); sm.textContent = lang==='en' ? t.en : t.es; m.appendChild(sm); }
+    var x=document.createElement('button'); x.type='button'; x.textContent='✕'; x.setAttribute('aria-label','Close');
+    x.addEventListener('click',function(){ d.remove(); });
+    d.appendChild(m); d.appendChild(x); document.body.appendChild(d);
+  }
+  function check(){
+    try{
+      if(!window.speechSynthesis){ show('nosynth'); return; }
+      var vs=window.speechSynthesis.getVoices()||[];
+      if(vs.length && !vs.some(isMandarin)) show('none');
+    }catch(e){}
+  }
+  function start(){
+    check();
+    try{ window.speechSynthesis.addEventListener('voiceschanged', check); }catch(e){}
+    setTimeout(check,1500); setTimeout(check,4000);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+</script>
+<script>
+/* ===== 一鍵靜音（只關音樂和音效，不影響念字的語音）===== */
+(function(){
+  var KEY='hg.mute.quemepongo', MOUNT='', muted=false, masters=[];
+  try{ muted = localStorage.getItem(KEY)==='1'; }catch(e){}
+  try{
+    var BP = window.BaseAudioContext ? window.BaseAudioContext.prototype : (window.AudioContext||window.webkitAudioContext).prototype;
+    var desc = Object.getOwnPropertyDescriptor(BP,'destination');
+    if(desc && desc.get){
+      Object.defineProperty(BP,'destination',{configurable:true,get:function(){
+        var real = desc.get.call(this);
+        if(!this.__hgMaster){
+          try{ var g=this.createGain(); g.gain.value = muted?0:1; g.connect(real); this.__hgMaster=g; masters.push(g); }
+          catch(e){ return real; }
+        }
+        return this.__hgMaster;
+      }});
+    }
+  }catch(e){}
+  try{
+    var op = HTMLMediaElement.prototype.play;
+    HTMLMediaElement.prototype.play = function(){ this.muted = muted; return op.apply(this, arguments); };
+  }catch(e){}
+  function apply(){ masters.forEach(function(g){ try{ g.gain.setValueAtTime(muted?0:1, g.context.currentTime); }catch(e){ g.gain.value = muted?0:1; } }); }
+  function build(){
+    if(document.getElementById('hgMute')) return;
+    var st=document.createElement('style');
+    st.textContent='#hgMute{position:fixed;left:8px;bottom:22px;z-index:2147483000;width:40px;height:40px;border-radius:50%;border:1px solid rgba(0,0,0,.28);background:rgba(255,255,255,.88);color:#222;font-size:19px;line-height:1;padding:0;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.25);touch-action:manipulation;-webkit-tap-highlight-color:transparent}#hgMute:active{transform:scale(.94)}#hgMute.st{position:static;flex:0 0 40px;margin:0 0 0 8px}';
+    document.head.appendChild(st);
+    var b=document.createElement('button'); b.type='button'; b.id='hgMute';
+    function paint(){ b.textContent = muted?'🔇':'🔊'; b.setAttribute('aria-pressed', muted?'true':'false');
+      b.title = b.ariaLabel = muted ? '開啟音樂和音效 · Activar música y efectos' : '靜音（音樂和音效）· Silenciar música y efectos'; apply(); }
+    b.addEventListener('click',function(e){ e.stopPropagation(); muted=!muted; try{ localStorage.setItem(KEY, muted?'1':'0'); }catch(err){} paint(); });
+    b.addEventListener('pointerdown',function(e){ e.stopPropagation(); });
+    paint();
+    var anchor = MOUNT && document.querySelector(MOUNT);
+    if(anchor && anchor.parentNode){ b.className='st'; anchor.parentNode.insertBefore(b, anchor.nextSibling); } else document.body.appendChild(b);
+  }
+  if(document.body) build(); else document.addEventListener('DOMContentLoaded', build);
+})();
+</script>
+<script>
+/* ===== 版權說明 ===== */
+(function(){
+  if(window.__hgCopy)return; window.__hgCopy=1;
+  function mk(){
+    if(document.getElementById('hgCopy'))return;
+    var d=document.createElement('div'); d.id='hgCopy';
+    d.textContent='© 2026 @cadadiaunosminutos_ben_chino ｜ 保留所有權利 / Todos los derechos reservados';
+    d.style.cssText='position:fixed;left:48px;right:48px;bottom:calc(2px + env(safe-area-inset-bottom,0px));text-align:center;font:10px/1.3 system-ui,-apple-system,"Noto Sans TC",sans-serif;color:rgba(120,120,120,.85);pointer-events:none;user-select:none;z-index:1;';
+    document.body.appendChild(d);
+  }
+  if(document.body)mk(); else document.addEventListener('DOMContentLoaded',mk);
+})();
+</script>
+<script>
+/* ===== 遊玩紀錄（hgPlays）===== */
+(function () {
+  var GAME = 'que_me_pongo_hoy';
+  var NAME_GETTER = null;
+  var CFG = { apiKey: 'AIzaSyC_YSDn2OH6_GKKwCq0d8QFNl3fYXzTC60', authDomain: 'memorma-24dab.firebaseapp.com',
+              projectId: 'memorma-24dab', appId: '1:806709458465:web:f0d12acb2f911f2f165560' };
+  var V = '10.12.2', CDN = 'https://www.gstatic.com/firebasejs/' + V + '/';
+  var cur = null, readyP = null, lib = null;
+  function gid() { try { return (HG.gameFn ? HG.gameFn() : GAME) || GAME; } catch (e) { return GAME; } }
+  function day() { var d = new Date(Date.now() + 8 * 3600e3); return d.toISOString().slice(0, 10); }
+  function ls(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) {} return null; }
+  function ready() {
+    if (readyP) return readyP;
+    readyP = (async function () {
+      var A = await import(CDN + 'firebase-app.js');
+      var Au = await import(CDN + 'firebase-auth.js');
+      var F = await import(CDN + 'firebase-firestore.js');
+      var app = A.initializeApp(CFG, 'hgplays');
+      var auth = Au.getAuth(app);
+      if (!auth.currentUser) await Au.signInAnonymously(auth);
+      else await auth.authStateReady();
+      lib = { F: F, db: F.getFirestore(app), uid: auth.currentUser.uid };
+      return lib;
+    })().catch(function () { readyP = null; return null; });
+    return readyP;
+  }
+  function getName(n) {
+    if (n) return String(n).slice(0, 36);
+    try { if (NAME_GETTER) return String(NAME_GETTER() || '').slice(0, 36); } catch (e) {}
+    return '';
+  }
+  var HG = window.HGPlays = {
+    visit: function () {
+      var g = gid(), d = day(), key = 'hg.visit.' + g;
+      if (ls(key) === d) return;
+      ready().then(function (L) {
+        if (!L) return;
+        var id = d + '_' + g + '_' + L.uid;
+        return L.F.setDoc(L.F.doc(L.db, 'visits', id), { game: g, day: d, uid: L.uid, at: L.F.serverTimestamp() })
+          .then(function () { ls(key, d); });
+      }).catch(function () {});
+    },
+    start: function (level, name) {
+      var mine = cur = { id: null, level: level == null ? '' : String(level).slice(0, 30) };
+      ready().then(function (L) {
+        if (!L) return;
+        var data = { game: gid(), level: mine.level, uid: L.uid, name: getName(name), day: day(),
+                     startedAt: L.F.serverTimestamp(), done: false };
+        return L.F.addDoc(L.F.collection(L.db, 'plays'), data).then(function (ref) {
+          mine.id = ref.id; if (mine.pendingEnd) HG._finish(mine, mine.pendingEnd);
+        });
+      }).catch(function () {});
+    },
+    end: function (info) {
+      var mine = cur; if (!mine || mine.ended) return; mine.ended = true; info = info || {};
+      if (mine.id) HG._finish(mine, info); else mine.pendingEnd = info;
+    },
+    _finish: function (mine, info) {
+      ready().then(function (L) {
+        if (!L || !mine.id) return;
+        var u = { done: true, endedAt: L.F.serverTimestamp(),
+                  secs: Math.max(0, Math.min(86400, Math.round(Number(info.secs != null ? info.secs : (Date.now() - (mine.t0 || Date.now())) / 1000) || 0))) };
+        var s = Number(info.score); if (isFinite(s) && info.score != null) u.score = Math.max(-1e9, Math.min(1e9, Math.round(s)));
+        var n = getName(info.name); if (n) u.name = n;
+        return L.F.updateDoc(L.F.doc(L.db, 'plays', mine.id), u);
+      }).catch(function () {});
+    }
+  };
+  var _s = HG.start; HG.start = function (l, n) { _s(l, n); if (cur) cur.t0 = Date.now(); };
+  setTimeout(function () { HG.visit(); }, 2500);
+})();
+</script>
+</body>
+</html>

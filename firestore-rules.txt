@@ -1,0 +1,16 @@
+// 「今天穿什麼？」排行榜規則（貼進 memorma-24dab 的規則，放在 match /databases/{database}/documents 裡面）
+// 集合名稱：weatherOutfitBoard　分數上限：300（第三關 100 分 × 3）
+match /weatherOutfitBoard/{uid} {
+  function s() { return request.resource.data; }
+  function okRow() {
+    return s().keys().hasOnly(['name','score','updatedAt'])
+      && s().name is string && s().name.size() >= 1 && s().name.size() <= 14
+      && s().score is int && s().score >= 0 && s().score <= 300
+      && s().updatedAt == request.time;
+  }
+  allow read: if true;
+  allow create: if signedIn() && request.auth.uid == uid && okRow();
+  allow update: if signedIn() && request.auth.uid == uid && okRow()
+                && s().score >= resource.data.score;
+  allow delete: if false;
+}
