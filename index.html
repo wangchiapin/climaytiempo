@@ -284,8 +284,7 @@ function check(o, scn){
   else if(a.minT <= 21 && o.bottom === 'shorts') P.push('legsCold');
   if(!a.multi && a.maxT >= 28 && o.bottom === 'pants') P.push('legsHot');
   const open = o.shoes === 'sandals' || o.shoes === 'slippers';
-  if(a.rain && open) P.push('feetWet');
-  else if(a.minT <= 15 && open) P.push('feetCold');
+  if(a.minT <= 15 && open) P.push('feetCold');   // 下雨穿拖鞋不算錯，只在答對時提醒（見 tips）
   if(a.typhoon){
     if(o.outer !== 'raincoat') P.push('needRaincoat');
     if(has('umbrella')) P.push('typhoonUmb');
@@ -297,6 +296,12 @@ function check(o, scn){
   if((o.outer === 'coat' && a.minT >= 16) || (o.top === 'sweater' && a.minT >= 22)) P.push('tooThick');
   return P;
 }
+// 答對時的小提醒（不算錯）
+function tips(o, scn){
+  const a = analyze(scn), T2 = [];
+  if(a.rain && (o.shoes === 'sandals' || o.shoes === 'slippers')) T2.push('feetWetTip');
+  return T2;
+}
 const MSG = {
   incomplete: () => sent([T('還沒穿好', 'hai2 mei2 chuan1 hao3', 'todavía no estás vestido', 'you are not dressed yet'), C, T('要選上衣', 'yao4 xuan3 shang4 yi1', 'elige una prenda de arriba', 'choose a top'), PUN('、', ','), T('下身', 'xia4 shen1', 'una de abajo', 'bottoms'), T('和', 'han4', 'y', 'and'), T('鞋子', 'xie2 zi5', 'zapatos', 'shoes')], '。'),
   cold: () => sent([T('太冷了', 'tai4 leng3 le5', 'hace demasiado frío', 'it is too cold'), C, T('要多穿一點', 'yao4 duo1 chuan1 yi4 dian3', 'abrígate más', 'wear more')], '。'),
@@ -304,6 +309,7 @@ const MSG = {
   legsCold: () => sent([T('腿會冷', 'tui3 hui4 leng3', 'tendrás frío en las piernas', 'your legs will be cold'), C, T('要穿長褲', 'yao4 chuan1 chang2 ku4', 'ponte pantalones largos', 'wear long pants')], '。'),
   legsHot: () => sent([T('穿長褲太熱了', 'chuan1 chang2 ku4 tai4 re4 le5', 'con pantalones largos hace demasiado calor', 'long pants are too hot'), C, ALLOW_SKIRT ? T('要穿短褲或裙子', 'yao4 chuan1 duan3 ku4 huo4 qun2 zi5', 'ponte pantalones cortos o falda', 'wear shorts or a skirt') : T('要穿短褲', 'yao4 chuan1 duan3 ku4', 'ponte pantalones cortos', 'wear shorts')], '。'),
   feetCold: () => sent([T('腳會冷', 'jiao3 hui4 leng3', 'tendrás frío en los pies', 'your feet will be cold'), C, T('不要穿拖鞋或涼鞋', 'bu2 yao4 chuan1 tuo1 xie2 huo4 liang2 xie2', 'no uses chancletas ni sandalias', 'do not wear flip-flops or sandals')], '。'),
+  feetWetTip: () => sent([T('下雨天穿拖鞋', 'xia4 yu3 tian1 chuan1 tuo1 xie2', 'con lluvia y chancletas', 'rain and flip-flops'), C, T('腳會濕喔', 'jiao3 hui4 shi1 o1', 'se te mojarán los pies', 'your feet will get wet')], '。'),
   feetWet: () => sent([T('下雨天', 'xia4 yu3 tian1', 'en un día de lluvia', 'on a rainy day'), C, T('腳會濕', 'jiao3 hui4 shi1', 'se te mojarán los pies', 'your feet will get wet'), C, T('不要穿拖鞋或涼鞋', 'bu2 yao4 chuan1 tuo1 xie2 huo4 liang2 xie2', 'no uses chancletas ni sandalias', 'do not wear flip-flops or sandals')], '。'),
   needRain: () => sent([T('會下雨', 'hui4 xia4 yu3', 'va a llover', 'it will rain'), C, T('要帶雨傘或穿雨衣', 'yao4 dai4 yu3 san3 huo4 chuan1 yu3 yi1', 'lleva paraguas o ponte impermeable', 'bring an umbrella or wear a raincoat')], '。'),
   needRaincoat: () => sent([T('颱風天', 'tai2 feng1 tian1', 'en un día de tifón', 'on a typhoon day'), C, T('要穿雨衣', 'yao4 chuan1 yu3 yi1', 'ponte impermeable', 'wear a raincoat')], '。'),
@@ -820,7 +826,7 @@ function onGo(){
   if(!P.length){
     const pts = Math.max(0, (G.attempts === 0 ? 10 : 6) - (G.peeked ? 3 : 0));
     G.score += pts; G.results.push(pts); G.phase = 'done'; G.revealed = true; G.mood = 'happy'; sfxOk();
-    renderMsg(msgHTML('ok', [pick(OKMSG)()]) + '<div class="big" style="font-size:1.3rem">+' + pts + ' ' + esc(Settings.lang === 'zh' ? conv('分') : (Settings.lang === 'es' ? 'pts' : 'pts')) + '</div>');
+    renderMsg(msgHTML('ok', [pick(OKMSG)()]) + (tips(G.outfit, G.scn).length ? msgHTML('info', tips(G.outfit, G.scn).map(c => MSG[c]())) : '') + '<div class="big" style="font-size:1.3rem">+' + pts + ' ' + esc(Settings.lang === 'zh' ? conv('分') : (Settings.lang === 'es' ? 'pts' : 'pts')) + '</div>');
   } else if(G.attempts === 0){
     G.attempts = 1; G.phase = 'wrong'; sfxBad();
     const first = P.find(x => MOOD_OF[x]);
