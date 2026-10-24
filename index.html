@@ -53,8 +53,7 @@ input[type=text]{width:100%;font:inherit;padding:10px 12px;border:1.5px solid va
 .wicons{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
 .wi{display:flex;align-items:center;gap:6px;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:3px 8px 3px 4px;font-weight:600;font-size:.95rem}
 .wi svg{width:34px;height:34px}
-.stage{margin:8px auto 4px;width:min(250px,64vw)}
-.stage svg{width:100%;height:auto;display:block;overflow:visible}
+.stage>svg{width:100%;height:auto;display:block}
 .stage.shiver svg{animation:shiver .22s linear infinite}
 .stage.hop svg{animation:hop .5s ease-out 2}
 @keyframes shiver{0%{transform:translateX(-2px)}50%{transform:translateX(2px)}100%{transform:translateX(-2px)}}
@@ -89,6 +88,65 @@ table.lb td{padding:7px 6px;border-bottom:1px solid var(--line)}
 table.lb td:first-child{width:34px;font-weight:800}
 table.lb td:last-child{text-align:right;font-weight:800}
 table.lb tr.me{background:var(--sel)}
+
+/* ===== 天氣主題外觀 ===== */
+body.start{background:linear-gradient(180deg,#cfe1e9 0,#e1e4dc 260px,#e8e0d0 520px) no-repeat,var(--bg)}
+.banner{display:block;width:100%;max-width:360px;height:auto;margin:0 auto}
+.lvic{margin-left:auto;display:flex;gap:2px}.lvic svg{width:30px;height:30px}
+.choice{background:linear-gradient(var(--card) 80%,#e4d8bd 80%)}
+.choice.on{background:linear-gradient(var(--sel) 80%,#c9d8c4 80%)}
+.stage{width:min(300px,84vw);margin:8px auto 4px;border-radius:16px;overflow:hidden;border:1.5px solid var(--line)}
+.stage.shiver svg,.stage.hop svg{animation:none}
+.stage.shiver .chg{animation:shiver .22s linear infinite}
+.stage.hop .chg{animation:hop .5s ease-out 2}
+.win-open{animation:winfade .6s ease-out}
+@keyframes winfade{from{opacity:0}to{opacity:1}}
+.rain line{animation:rainfall .75s linear infinite}
+.rain.fast line{animation-duration:.45s}
+@keyframes rainfall{from{transform:translate(0,-14px)}to{transform:translate(-4px,16px)}}
+.sunr{transform-origin:30px 16px;animation:spin 24s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.rain line,.sunr,.win-open,.stage.shiver .chg,.stage.hop .chg{animation:none}}
+/* 預報卡片：四種管道各有樣子 */
+.frame{display:block;padding:0;overflow:hidden}
+.frame .fbody{display:flex;gap:12px;align-items:center;padding:10px 12px}
+.fhead{display:flex;align-items:center;gap:8px;padding:5px 12px;font-weight:700;font-size:.95rem;color:#fff}
+.fhead small.tr{display:inline;color:#e3ece6;margin-left:4px}
+.fhead rt{color:#dfe8ea}
+.fhead .live{width:9px;height:9px;border-radius:50%;background:#e0584b;animation:blink 1.2s steps(2) infinite}
+@keyframes blink{50%{opacity:.25}}
+.fhead .sp2{flex:1}.fhead .sig{font-size:.8rem;letter-spacing:1px;font-weight:600}
+.frame.news{background:#eef2f3;border-color:#8ea0a8}.frame.news .fhead{background:#3f5560}
+.frame.news .ticker{height:12px;background:repeating-linear-gradient(90deg,#3f5560 0 14px,#51697a 14px 28px);opacity:.9}
+.frame.phone{background:#f6f3ec;border:2px solid #3b3733;border-radius:22px}.frame.phone .fhead{background:#3b3733;border-radius:0}
+.frame.push{background:#eceae5;border-radius:18px;border-color:#cfcabd}
+.frame.push .fhead{background:transparent;color:var(--ink2);padding-bottom:0}.frame.push .fhead rt{color:var(--ink2)}
+.frame.push .fhead small.tr{color:var(--ink2)}
+.appico{width:26px;height:26px;border-radius:7px;background:#8fb0c2;display:inline-flex;align-items:center;justify-content:center}
+.appico svg{width:20px;height:20px}
+.frame.friend{background:#d9e6d2;border-color:#a9c2a0}.frame.friend .fhead{background:#6f8f69}
+.frame.friend .fbody{align-items:flex-start}
+.frame.friend .avatar{width:44px;flex:0 0 44px}.frame.friend .avatar svg{width:100%;height:auto;display:block}
+.frame.friend .bub{flex:1;min-width:0;background:#fffdf7;border:1.5px solid #b7cdb0;border-radius:4px 16px 16px 16px;padding:8px 10px}
+.frame.friend .bub .nm{font-size:.9rem;color:var(--ink2);margin-bottom:4px}
+.dots span{display:inline-block;width:7px;height:7px;border-radius:50%;background:#9bb394;margin-right:4px;animation:blink 1s steps(2) infinite}
+.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+.say-card.say-news{background:#e6ecee;border-left:6px solid #3f5560}
+.say-card.say-phone{background:#f7f4ee;border:2px solid #3b3733;border-radius:22px}
+.say-card.say-push{background:#efede8;border-radius:18px;border-color:#cfcabd}
+.say-card.say-friend{background:#fffdf7;border:1.5px solid #b7cdb0;border-radius:4px 16px 16px 16px}
+/* 衣櫃 */
+.closet{background:#e5d6b6;border:1.5px solid #b79f78;border-radius:14px;padding:6px 8px 8px;margin-top:6px}
+.closet .rail{height:7px;border-radius:4px;background:linear-gradient(#a58b5e,#8c7550);margin:2px 2px 8px}
+.closet .tabs{margin:0 0 6px}
+.closet .tab{background:#f3e9d2;border-color:#b79f78;position:relative;padding-top:10px}
+.closet .tab::before{content:"";position:absolute;top:3px;left:50%;width:12px;height:3px;margin-left:-6px;border-radius:2px;background:#a58b5e}
+.closet .tab.on{background:var(--accent);border-color:var(--accent2)}.closet .tab.on::before{background:#e3ece6}
+.closet .grid{background:#f4ecd9;border-radius:10px;padding:8px;border:1px solid #d3c19b}
+.item{position:relative;padding-top:18px}
+.grid[data-slot=top] .item::before,.grid[data-slot=outer] .item::before,.grid[data-slot=bottom] .item::before{content:"";position:absolute;top:1px;left:50%;width:36px;height:14px;margin-left:-18px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 14'%3E%3Cpath d='M18 8V5.5a2.5 2.5 0 1 0-2.5-2.5' fill='none' stroke='%238c7550' stroke-width='1.6' stroke-linecap='round'/%3E%3Cpath d='M18 8L3 13h30z' fill='none' stroke='%238c7550' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat}
+.grid[data-slot=acc] .item::before{content:"";position:absolute;top:2px;left:50%;width:14px;height:14px;margin-left:-7px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Ccircle cx='7' cy='4' r='3' fill='none' stroke='%238c7550' stroke-width='1.6'/%3E%3Cpath d='M7 7v6' stroke='%238c7550' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") center/contain no-repeat}
+.grid[data-slot=shoes] .item{padding-top:6px}.grid[data-slot=shoes] .item svg{border-bottom:4px solid #b79f78;border-radius:2px}
 @media (min-width:760px){#app{max-width:900px}.play-wrap{display:grid;grid-template-columns:300px 1fr;gap:14px;align-items:start}.stage{width:100%}}
 </style>
 </head>
@@ -630,7 +688,7 @@ function bodySVG(){
     + '<ellipse cx="86" cy="302" rx="14" ry="7" fill="' + SK + '"/><ellipse cx="114" cy="302" rx="14" ry="7" fill="' + SK + '"/>'
     + '<rect x="75" y="170" width="50" height="16" rx="6" fill="#d2cabb"/>';
 }
-function charSVG(g, o, mood){
+function charG(g, o, mood){
   const acc = o.acc || [], L = [];
   if(o.outer === 'raincoat') L.push('<circle cx="100" cy="54" r="35" fill="#e2b94c"/><path d="M74,78 Q100,98 126,78 L130,92 L70,92 Z" fill="#e2b94c"/>');
   L.push(bodySVG());
@@ -641,8 +699,9 @@ function charSVG(g, o, mood){
   L.push(headSVG(g, mood));
   if(o.outer === 'raincoat') L.push('<path d="M67,58 Q66,22 100,21 Q134,22 133,58" fill="none" stroke="#c99f33" stroke-width="6" stroke-linecap="round"/>');
   ['hat', 'shades', 'mask', 'scarf', 'gloves', 'umbrella', 'sunscreen'].forEach(id => { if(acc.includes(id)) L.push(LAYER[id]()); });
-  return '<svg viewBox="0 0 240 322" role="img" aria-label="character"><g transform="translate(20,0)">' + L.join('') + '</g></svg>';
+  return '<g transform="translate(20,0)">' + L.join('') + '</g>';
 }
+function charSVG(g, o, mood){ return '<svg viewBox="0 0 240 322" role="img" aria-label="character">' + charG(g, o, mood) + '</svg>'; }
 const EMPTY = () => ({top:null, outer:null, bottom:null, shoes:null, acc:[]});
 const DEFAULT_OUTFIT = {top:'tee', outer:null, bottom:'pants', shoes:'sneakers', acc:[]};
 
@@ -664,6 +723,64 @@ function deviceSVG(fmt){
   if(fmt === 'phone') return '<svg viewBox="0 0 80 80"><rect x="22" y="6" width="36" height="68" rx="7" fill="#3b3733"/><rect x="26" y="14" width="28" height="52" rx="3" fill="#dfe6e3"/><rect x="28" y="20" width="24" height="16" rx="3" fill="#f7f2e8"/><circle cx="33" cy="28" r="3.5" fill="#4f86a8"/><rect x="39" y="24" width="11" height="2.5" rx="1" fill="#9a9488"/><rect x="39" y="29" width="8" height="2.5" rx="1" fill="#9a9488"/></svg>';
   if(fmt === 'push') return '<svg viewBox="0 0 80 80"><rect x="6" y="18" width="68" height="40" rx="8" fill="#f7f2e8" stroke="#3b3733" stroke-width="2.5"/><rect x="6" y="18" width="10" height="40" rx="5" fill="#b4694f"/><path d="M40 28a8 8 0 0 0 -8 8v5l-3 4h22l-3 -4v-5a8 8 0 0 0 -8 -8z" fill="#3b3733"/><circle cx="40" cy="49" r="2.6" fill="#3b3733"/><circle cx="53" cy="27" r="4.5" fill="#b4694f"/></svg>';
   return '<svg viewBox="0 0 80 80"><circle cx="20" cy="26" r="11" fill="#c9b99b"/><circle cx="20" cy="23" r="4" fill="#f7f2e8"/><path d="M12 33 q8 -8 16 0" fill="#f7f2e8"/><rect x="34" y="14" width="40" height="26" rx="9" fill="#a9c9a0"/><path d="M34 34 l-6 8 l12 -4z" fill="#a9c9a0"/><g fill="#3b3733"><circle cx="46" cy="27" r="2.4"/><circle cx="54" cy="27" r="2.4"/><circle cx="62" cy="27" r="2.4"/></g><rect x="22" y="48" width="42" height="18" rx="8" fill="#f7f2e8" stroke="#c4b9a2" stroke-width="2"/></svg>';
+}
+
+
+/* ---------- 舞台場景：玄關＋窗戶（答完才拉開窗簾看天氣）---------- */
+function skyPane(x, y, w, h, p, k){
+  const sky = p.sky; let bg = '#cfe4ef', inner = '';
+  const cloud = (cx, cy, c, sc) => '<g transform="translate(' + cx + ',' + cy + ') scale(' + (sc || 1) + ')"><path d="M-14 6h22a6 6 0 0 0 .4-12A8 8 0 0 0 -12 -4 5 5 0 0 0 -14 6z" fill="' + c + '"/></g>';
+  const drops = (c, fast) => '<g class="rain' + (fast ? ' fast' : '') + '" stroke="' + c + '" stroke-width="' + (fast ? 2 : 1.5) + '" stroke-linecap="round">' + [6, 15, 24, 33, 42].map((x2, i) => '<line x1="' + x2 + '" y1="' + (24 + (i % 2) * 6) + '" x2="' + (x2 - 2) + '" y2="' + (30 + (i % 2) * 6) + '" style="animation-delay:-' + (i * .17).toFixed(2) + 's"/>').join('') + '</g>';
+  if(sky === 'sunny'){ bg = '#cfe4ef'; inner = '<g class="sunr"><circle cx="30" cy="16" r="8" fill="#f0c85a"/><g stroke="#f0c85a" stroke-width="2.2" stroke-linecap="round"><path d="M30 3v3M30 26v3M17 16h3M40 16h3M21 7l2 2M37 23l2 2M39 7l-2 2M23 23l-2 2"/></g></g>'; }
+  else if(sky === 'cloudy'){ bg = '#d3e1e8'; inner = '<circle cx="15" cy="14" r="6" fill="#f0c85a"/>' + cloud(26, 24, '#fbfbf8', 1.1); }
+  else if(sky === 'overcast'){ bg = '#b9c3c8'; inner = cloud(16, 16, '#9fabb1', 1) + cloud(32, 26, '#d4dadd', 1.2); }
+  else if(sky === 'rainy'){ bg = '#93a3ad'; inner = cloud(16, 12, '#6f8089', 1.1) + cloud(32, 18, '#7f909a', 1.2) + drops('#e3eef4'); }
+  else { bg = '#697985'; inner = cloud(16, 10, '#46545d', 1.2) + cloud(33, 16, '#56656f', 1.2) + '<g class="rain fast" stroke="#dbe7ee" stroke-width="2" stroke-linecap="round">' + [4, 12, 20, 28, 36, 44].map((x2, i) => '<line x1="' + x2 + '" y1="' + (22 + (i % 3) * 5) + '" x2="' + (x2 - 6) + '" y2="' + (30 + (i % 3) * 5) + '" style="animation-delay:-' + (i * .11).toFixed(2) + 's"/>').join('') + '</g>'; }
+  const haze = p.air ? '<rect width="48" height="58" fill="#b8a77f" opacity=".42"/>' : '';
+  return '<svg x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" viewBox="0 0 48 58" preserveAspectRatio="xMidYMid slice"><rect width="48" height="58" fill="' + bg + '"/><rect y="46" width="48" height="12" fill="#a9b7a0" opacity=".55"/>' + inner + haze + '</svg>';
+}
+function sceneSVG(periods, open){
+  const wx = 14, wy = 38, ww = 96, wh = 116;
+  let win = '';
+  if(open && periods){
+    const n = periods.length, pw = ww / n;
+    win = '<g class="win-open">' + periods.map((p, i) => skyPane(wx + i * pw, wy, pw, wh, p, i)).join('') + (n > 1 ? '<rect x="' + (wx + ww / 2 - 1.5) + '" y="' + wy + '" width="3" height="' + wh + '" fill="#8a7a5c"/>' : '') + '</g>'
+      + '<path d="M' + wx + ' ' + wy + 'h14l-3 ' + wh + 'h-11z" fill="#b8c4b0"/><path d="M' + (wx + ww) + ' ' + wy + 'h-14l3 ' + wh + 'h11z" fill="#a9b8a3"/>';
+  } else {
+    win = '<rect x="' + wx + '" y="' + wy + '" width="' + ww + '" height="' + wh + '" fill="#dfe6e8"/>'
+      + '<path d="M' + wx + ' ' + wy + 'h52v' + wh + 'h-52z" fill="#b8c4b0"/><path d="M' + (wx + 50) + ' ' + wy + 'h46v' + wh + 'h-46z" fill="#a9b8a3"/>'
+      + '<g stroke="#8fa088" stroke-width="1.4" opacity=".7"><path d="M26 40v112M38 40v112M50 40v112M62 40v112M74 40v112M86 40v112M98 40v112"/></g>';
+  }
+  return '<rect width="300" height="340" fill="#efe6d4"/><rect y="296" width="300" height="44" fill="#d9c9a8"/><rect y="291" width="300" height="6" fill="#c4b08a"/>'
+    + '<rect x="268" y="52" width="40" height="240" rx="3" fill="#cdb98f" stroke="#a8946b" stroke-width="2"/><circle cx="279" cy="176" r="3.5" fill="#8a7a5c"/>'
+    + win
+    + '<rect x="' + (wx - 4) + '" y="' + (wy - 4) + '" width="' + (ww + 8) + '" height="' + (wh + 8) + '" fill="none" stroke="#8a7a5c" stroke-width="5" rx="2"/><rect x="' + (wx - 8) + '" y="' + (wy + wh + 3) + '" width="' + (ww + 16) + '" height="6" rx="2" fill="#a58b5e"/>'
+    + '<path d="M' + (wx - 4) + ' ' + (wy - 10) + 'h' + (ww + 8) + '" stroke="#8c7550" stroke-width="3" stroke-linecap="round"/>'
+    + '<ellipse cx="150" cy="304" rx="64" ry="9" fill="#c4b08a" opacity=".75"/>';
+}
+function stageSVG(g, o, mood, periods, open){
+  return '<svg viewBox="0 0 300 340" role="img" aria-label="character">' + sceneSVG(periods, open) + '<g class="chg"><svg x="40" y="6" width="220" height="296" viewBox="0 0 240 322">' + charG(g, o, mood) + '</svg></g></svg>';
+}
+function bannerSVG(){
+  return '<svg class="banner" viewBox="0 0 320 96" aria-hidden="true">'
+    + '<g class="sunr" style="transform-origin:44px 42px"><circle cx="44" cy="42" r="15" fill="#f0c85a"/><g stroke="#f0c85a" stroke-width="3" stroke-linecap="round"><path d="M44 16v6M44 62v6M18 42h6M64 42h6M26 24l4 4M58 56l4 4M62 24l-4 4M30 56l-4 4"/></g></g>'
+    + '<path d="M82 60h46a12 12 0 0 0 1-24 16 16 0 0 0-31-4 11 11 0 0 0-16 28z" fill="#fbfbf8" stroke="#c4b9a2" stroke-width="1.5"/>'
+    + '<path d="M118 76l-3 9M130 76l-3 9M142 76l-3 9" stroke="#6f93aa" stroke-width="3" stroke-linecap="round"/>'
+    + '<g transform="translate(176,18)"><path d="M0 28a30 30 0 0 1 60 0z" fill="#6f93aa"/><path d="M0 28q7-8 15 0q7-8 15 0q7-8 15 0q7-8 15 0" fill="none" stroke="#dfeaf0" stroke-width="1.4"/><path d="M30 28v34a5 5 0 0 1-10 0" fill="none" stroke="#3b3733" stroke-width="3" stroke-linecap="round"/></g>'
+    + '<g transform="translate(266,8)"><path d="M26 10V7a4 4 0 1 0-4-4" fill="none" stroke="#8c7550" stroke-width="2.2" stroke-linecap="round"/><path d="M26 10L4 26h44z" fill="none" stroke="#8c7550" stroke-width="2.2" stroke-linejoin="round"/><path d="M8 30q18-9 36 0l5 6-7 4-2-4v40H12V36l-2 4-7-4z" fill="#b4694f" opacity=".9"/><path d="M26 31v47" stroke="#8f4a36" stroke-width="2"/></g>'
+    + '</svg>';
+}
+function frameHTML(){
+  const fmt = G.scn.fmt, f = FMT_LABEL[fmt];
+  const fl = rubyZh(f[0][0], f[0][1].split(' '));
+  const ftr = Settings.lang === 'es' ? T_ES[f[1]] : Settings.lang === 'en' ? T_EN[f[1]] : '';
+  const trS = ftr ? '<small class="tr">' + esc(ftr) + '</small>' : '';
+  const acts = '<div class="acts"><button class="btn main" id="bListen">🔊 ' + ui('again', {notr: true}) + '</button><button class="btn" id="bPeek">👁 ' + ui('peek', {notr: true}) + '</button></div>';
+  if(fmt === 'news') return '<div class="card frame news"><div class="fhead"><span class="live"></span><span>' + fl + trS + '</span></div><div class="fbody"><div class="dev">' + deviceSVG('news') + '</div><div class="info">' + acts + '</div></div><div class="ticker"></div></div>';
+  if(fmt === 'phone') return '<div class="card frame phone"><div class="fhead"><span class="sig">7:30</span><span class="sp2"></span><span class="sig">▂▄▆ ▮</span></div><div class="fbody"><div class="dev">' + deviceSVG('phone') + '</div><div class="info"><span class="chip">' + fl + '</span>' + (trS ? '<div style="margin:-3px 0 6px">' + trS + '</div>' : '') + acts + '</div></div></div>';
+  if(fmt === 'push') return '<div class="card frame push"><div class="fhead"><span class="appico">' + weatherIcon('cloudy') + '</span><span>' + fl + trS + '</span><span class="sp2"></span><span class="sig">7:30</span></div><div class="fbody"><div class="dev">' + deviceSVG('push') + '</div><div class="info">' + acts + '</div></div></div>';
+  const n = FRIEND_NAMES[G.friend];
+  return '<div class="card frame friend"><div class="fhead"><span>' + fl + trS + '</span></div><div class="fbody"><div class="avatar"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="22" fill="#c9b99b"/><circle cx="22" cy="17" r="8" fill="#f7f2e8"/><path d="M6 38q16-20 32 0" fill="#f7f2e8"/></svg></div><div class="bub"><div class="nm">' + segsHTML(n.segs) + '</div><div class="dots"><span></span><span></span><span></span></div>' + acts + '</div></div></div>';
 }
 
 /* ---------- 聲音 ---------- */
@@ -708,14 +825,14 @@ const G = {char: lsGet('hg.weather.char') === 'girl' ? 'girl' : 'boy', level: 1,
   outfit: EMPTY(), phase: 'dress', attempts: 0, peeked: false, revealed: false, mood: 'idle', tab: 'top', lastType: null, results: [], t0: 0, friend: 0};
 const show = id => ['sStart', 'sPlay', 'sEnd'].forEach(s => $(s).classList.toggle('hidden', s !== id));
 let CUR = 'sStart';
-function go(id){ CUR = id; show(id); window.scrollTo(0, 0); }
+function go(id){ CUR = id; show(id); document.body.classList.toggle('start', id === 'sStart'); window.scrollTo(0, 0); }
 
 /* ---------- 首頁 ---------- */
 function renderStart(){
   const lvDesc = n => ui('l' + n + 'd');
   const levels = [1, 2, 3].map(n => '<button class="btn lv" data-lv="' + n + '" style="text-align:left;' + (G.level === n ? 'background:var(--sel);border-color:var(--accent);box-shadow:0 0 0 2px var(--accent) inset' : 'border-color:var(--line)') + '"><span class="n">' + n + '</span><span>' + lvDesc(n) + '</span></button>').join('');
   $('sStart').innerHTML =
-    '<h1>' + conv('今天穿什麼？') + '</h1>' + '<p class="sub">' + (Settings.lang === 'zh' ? esc(conv('聽天氣預報，幫角色選衣服')) : esc(Settings.lang === 'es' ? '¿Qué me pongo hoy? Escucha el pronóstico y viste al personaje.' : 'What should I wear today? Listen to the forecast and dress the character.')) + '</p>'
+    bannerSVG() + '<h1>' + conv('今天穿什麼？') + '</h1>' + '<p class="sub">' + (Settings.lang === 'zh' ? esc(conv('聽天氣預報，幫角色選衣服')) : esc(Settings.lang === 'es' ? '¿Qué me pongo hoy? Escucha el pronóstico y viste al personaje.' : 'What should I wear today? Listen to the forecast and dress the character.')) + '</p>'
     + '<div class="card"><div class="sect">' + ui('pickChar') + '</div><div class="row">'
     + ['boy', 'girl'].map(g => '<button class="choice ' + (G.char === g ? 'on' : '') + '" data-char="' + g + '">' + charSVG(g, DEFAULT_OUTFIT, 'happy') + '<div>' + ui(g) + '</div></button>').join('') + '</div>'
     + '<div class="sect">' + ui('pickLevel') + '</div>' + levels
@@ -750,15 +867,11 @@ const spoken = () => G.phrase.segs.map(s => s.zh).join('');
 function playPhrase(){ speak(spoken()); }
 function tabKey(s){ return {top:'tTop', outer:'tOuter', bottom:'tBottom', shoes:'tShoes', acc:'tAcc'}[s]; }
 function buildPlay(){
-  const f = FMT_LABEL[G.scn.fmt];
-  const fl = rubyZh(f[0][0], f[0][1].split(' '));
-  const ftr = Settings.lang === 'es' ? T_ES[f[1]] : Settings.lang === 'en' ? T_EN[f[1]] : '';
   $('sPlay').innerHTML =
-    '<div class="topbar"><span class="pill">' + (Settings.lang === 'zh' ? '' : '') + esc(conv('第')) + ' ' + G.round + ' / ' + ROUNDS + '</span><span class="pill">⭐ <span id="scoreNow">' + G.score + '</span></span><span class="sp"></span><button class="iconbtn" id="bHome" aria-label="home">⌂</button><button class="iconbtn" id="bSet2" aria-label="settings">⚙</button></div>'
-    + '<div class="play-wrap"><div><div class="card frame"><div class="dev">' + deviceSVG(G.scn.fmt) + '</div><div class="info"><span class="chip">' + fl + '</span>' + (ftr ? '<small class="tr" style="margin:-3px 0 6px">' + esc(ftr) + '</small>' : '')
-    + '<div class="acts"><button class="btn main" id="bListen">🔊 ' + ui('again', {notr: true}) + '</button><button class="btn" id="bPeek">👁 ' + ui('peek', {notr: true}) + '</button></div></div></div>'
+    '<div class="topbar"><span class="pill">' + esc(conv('第')) + ' ' + G.round + ' / ' + ROUNDS + '</span><span class="pill">⭐ <span id="scoreNow">' + G.score + '</span></span><span class="sp"></span><button class="iconbtn" id="bHome" aria-label="home">⌂</button><button class="iconbtn" id="bSet2" aria-label="settings">⚙</button></div>'
+    + '<div class="play-wrap"><div>' + frameHTML()
     + '<div id="say"></div><div class="stage" id="stage"></div></div>'
-    + '<div><div class="tabs" id="tabs"></div><div class="grid" id="grid"></div><div class="msg" id="msg"></div><div class="actions" id="actions"></div></div></div>';
+    + '<div><div class="closet"><div class="rail"></div><div class="tabs" id="tabs"></div><div class="grid" id="grid"></div></div><div class="msg" id="msg"></div><div class="actions" id="actions"></div></div></div>';
   $('bListen').onclick = playPhrase;
   $('bPeek').onclick = () => { if(G.phase === 'done') return; G.peeked = true; renderSay(); };
   $('bHome').onclick = () => { try{ speechSynthesis.cancel(); }catch(e){} renderStart(); go('sStart'); };
@@ -770,7 +883,7 @@ function renderSay(){
   const showTxt = G.revealed || G.peeked;
   if(!showTxt){ box.innerHTML = ''; return; }
   const ph = G.phrase, scn = G.scn;
-  let html = '<div class="card" style="margin-top:8px"><div class="say">' + segsHTML(ph.segs) + (transOf(ph) ? '<div class="trl">' + esc(transOf(ph)) + '</div>' : '') + '</div>';
+  let html = '<div class="card say-card say-' + scn.fmt + '" style="margin-top:8px"><div class="say">' + segsHTML(ph.segs) + (transOf(ph) ? '<div class="trl">' + esc(transOf(ph)) + '</div>' : '') + '</div>';
   if(G.revealed){
     html += '<div class="wicons">' + scn.periods.map(p => '<span class="wi">' + weatherIcon(p.sky, p.air) + '<span>' + (p.when ? esc(conv({morning:'早上', afternoon:'下午', evening:'晚上'}[p.when])) + ' ' : '') + p.t + '°C' + (scn.level > 1 && (p.sky === 'rainy' || p.sky === 'typhoon') ? ' · ' + p.prob + '%' : '') + '</span></span>').join('') + '</div>';
   }
@@ -783,7 +896,7 @@ function renderSay(){
 function renderStage(){
   const st = $('stage'); if(!st) return;
   st.className = 'stage' + (G.mood === 'cold' ? ' shiver' : G.mood === 'happy' ? ' hop' : '');
-  st.innerHTML = charSVG(G.char, G.outfit, G.mood);
+  st.innerHTML = stageSVG(G.char, G.outfit, G.mood, G.scn ? G.scn.periods : null, !!G.revealed);
 }
 function renderTabs(){
   $('tabs').innerHTML = SLOTS.map(s => {
@@ -795,6 +908,7 @@ function renderTabs(){
 function isWorn(id){ const it = ITEMS[id]; return it.slot === 'acc' ? G.outfit.acc.includes(id) : G.outfit[it.slot] === id; }
 function renderGrid(){
   ALLOW_SKIRT = G.char === 'girl';
+  $('grid').dataset.slot = G.tab;
   $('grid').innerHTML = BY_SLOT[G.tab].filter(id => id !== 'skirt' || G.char === 'girl').map(id => '<button class="item ' + (isWorn(id) ? 'on' : '') + '" data-id="' + id + '">' + iconSVG(id) + '<div>' + itemName(id) + '</div>' + (itemTr(id) ? '<small class="tr">' + esc(itemTr(id)) + '</small>' : '') + '</button>').join('');
   $('grid').querySelectorAll('[data-id]').forEach(b => b.onclick = () => onItem(b.dataset.id));
 }
@@ -879,6 +993,7 @@ function rerender(){ applyPhon();
 }
 
 /* ---------- 開始 ---------- */
+document.body.classList.add('start');
 renderStart();
 window.__WO = {G, check, say, genScenario, solve, ITEMS};
 </script>
