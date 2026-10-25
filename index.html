@@ -635,59 +635,112 @@ function itemName(id){ const it = ITEMS[id]; return rubyZh(it.zh, it.py.split(' 
 function itemTr(id){ const it = ITEMS[id]; return Settings.lang === 'es' ? it.es : Settings.lang === 'en' ? it.en : ''; }
 
 /* ---------- 圖：角色與衣物（用程式畫）---------- */
-const SK = '#efd3b8', INK = '#3b3733';
+const SK = '#efd3b8', SH = '#dfbb9d', INK = '#3b3733';
+const mir = s => '<g transform="translate(200,0) scale(-1,1)">' + s + '</g>';
+const pair = s => s + mir(s);
+const shade = (d, o) => '<path d="' + d + '" fill="#000" opacity="' + (o || .07) + '"/>';
+function topShirt(c, d, sl, cuff){
+  const arm = `<path d="M68,90 L50,93 Q44,95 44,102 L46,${sl-4} Q46,${sl} 52,${sl} L66,${sl} L69,104 Z" fill="${c}"/>`
+    + (cuff ? `<path d="M46,${sl-9} H67 V${sl} H52 Q46,${sl} 46,${sl-4} Z" fill="${d}"/><path d="M50,${sl-8} v8 M54,${sl-8} v8 M58,${sl-8} v8 M62,${sl-8} v8" stroke="#000" stroke-opacity=".12" stroke-width="1"/>`
+           : `<path d="M46,${sl-8} L67,${sl-12} V${sl-3} Q60,${sl} 52,${sl} Q46,${sl} 46,${sl-4} Z" fill="${d}"/>`)
+    + shade('M44,102 Q44,95 50,93 L56,100 L52,' + (sl-10) + ' Z', .06);
+  return pair(arm) + `<path d="M84,86 Q66,88 66,104 L66,176 Q66,182 72,182 L128,182 Q134,182 134,176 L134,104 Q134,88 116,86 Z" fill="${c}"/>`
+    + shade('M122,90 Q134,94 134,106 V176 Q134,182 128,182 H116 Z');
+}
 const LAYER = {
-  tee: () => '<g fill="#9db4c0"><rect x="66" y="86" width="68" height="94" rx="14"/><rect x="46" y="88" width="26" height="36" rx="11"/><rect x="128" y="88" width="26" height="36" rx="11"/></g><path d="M88,87 Q100,99 112,87" fill="none" stroke="#7f98a6" stroke-width="3"/>',
-  long: () => '<g fill="#c8927c"><rect x="66" y="86" width="68" height="94" rx="14"/><rect x="46" y="88" width="26" height="88" rx="11"/><rect x="128" y="88" width="26" height="88" rx="11"/></g><path d="M88,87 Q100,99 112,87" fill="none" stroke="#a87662" stroke-width="3"/>',
-  tank: () => '<path d="M74,88 L88,88 Q100,102 112,88 L126,88 L130,180 L70,180 Z" fill="#dcc99f"/>',
-  sweater: () => '<g fill="#a7b59a"><rect x="66" y="86" width="68" height="96" rx="14"/><rect x="46" y="88" width="26" height="88" rx="11"/><rect x="128" y="88" width="26" height="88" rx="11"/></g><g fill="#8e9d82"><rect x="64" y="170" width="72" height="12" rx="5"/><rect x="46" y="166" width="26" height="10" rx="4"/><rect x="128" y="166" width="26" height="10" rx="4"/><rect x="86" y="80" width="28" height="12" rx="6"/></g>',
-  jacket: () => '<g fill="#5f7487"><rect x="62" y="84" width="76" height="104" rx="12"/><rect x="42" y="86" width="28" height="92" rx="12"/><rect x="130" y="86" width="28" height="92" rx="12"/></g><path d="M100,96 L100,188" stroke="#46576a" stroke-width="3"/><path d="M82,84 L100,102 L118,84" fill="none" stroke="#46576a" stroke-width="4" stroke-linejoin="round"/>',
-  coat: () => '<g fill="#74604f"><rect x="58" y="82" width="84" height="134" rx="14"/><rect x="38" y="84" width="32" height="96" rx="14"/><rect x="130" y="84" width="32" height="96" rx="14"/></g><rect x="78" y="74" width="44" height="18" rx="8" fill="#5d4b3d"/><g stroke="#5d4b3d" stroke-width="3" fill="none"><path d="M60,120 H140 M60,152 H140 M60,184 H140 M100,92 V216"/></g>',
-  raincoat: () => '<g fill="#e2b94c"><rect x="58" y="82" width="84" height="134" rx="12"/><rect x="40" y="84" width="30" height="94" rx="13"/><rect x="130" y="84" width="30" height="94" rx="13"/></g><path d="M100,92 V216" stroke="#c99f33" stroke-width="3"/><g fill="#c99f33"><circle cx="106" cy="118" r="3"/><circle cx="106" cy="140" r="3"/><circle cx="106" cy="162" r="3"/></g><g fill="none" stroke="#c99f33" stroke-width="3"><rect x="66" y="168" width="24" height="26" rx="4"/><rect x="110" y="168" width="24" height="26" rx="4"/></g>',
-  shorts: () => '<g fill="#7f8f78"><rect x="74" y="172" width="26" height="52" rx="9"/><rect x="100" y="172" width="26" height="52" rx="9"/></g><rect x="74" y="168" width="52" height="9" rx="3" fill="#6c7a66"/>',
-  pants: () => '<g fill="#4d5968"><rect x="74" y="170" width="26" height="126" rx="9"/><rect x="100" y="170" width="26" height="126" rx="9"/></g><rect x="74" y="168" width="52" height="9" rx="3" fill="#3f4a58"/>',
-  skirt: () => '<path d="M74,170 L126,170 L142,236 Q100,248 58,236 Z" fill="#b87b6f"/><rect x="74" y="168" width="52" height="8" rx="3" fill="#a06a5f"/>',
-  sneakers: () => '<g stroke="' + INK + '" stroke-width="1.5"><rect x="68" y="290" width="34" height="17" rx="8" fill="#f4efe6"/><rect x="98" y="290" width="34" height="17" rx="8" fill="#f4efe6"/></g><g fill="' + INK + '"><rect x="68" y="302" width="34" height="6" rx="3"/><rect x="98" y="302" width="34" height="6" rx="3"/></g>',
-  sandals: () => '<g fill="#8a6a45"><rect x="70" y="302" width="30" height="6" rx="3"/><rect x="100" y="302" width="30" height="6" rx="3"/></g><g stroke="#a67c52" stroke-width="3" stroke-linecap="round"><path d="M76,296 H94 M78,300 H92 M106,296 H124 M108,300 H122"/></g>',
-  slippers: () => '<g fill="#6f95a3"><rect x="68" y="301" width="34" height="7" rx="3.5"/><rect x="98" y="301" width="34" height="7" rx="3.5"/></g><g fill="none" stroke="#6f95a3" stroke-width="5" stroke-linecap="round"><path d="M76,297 Q86,289 96,297"/><path d="M104,297 Q114,289 124,297"/></g>',
-  boots: () => '<g fill="#dcb445"><rect x="72" y="258" width="29" height="48" rx="8"/><rect x="99" y="258" width="29" height="48" rx="8"/></g><g fill="' + INK + '"><rect x="70" y="300" width="33" height="8" rx="3"/><rect x="97" y="300" width="33" height="8" rx="3"/></g><g stroke="#b99530" stroke-width="3"><path d="M72,266 H101 M99,266 H128"/></g>',
-  umbrella: () => '<path d="M160,64 L148,176" stroke="#5a5048" stroke-width="3" fill="none"/><path d="M148,176 q0,10 -8,7" stroke="#5a5048" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M108,70 Q160,14 212,70 Q196,60 186,70 Q173,60 160,70 Q147,60 134,70 Q121,60 108,70 Z" fill="#5d7f93"/><path d="M160,70 L160,36 M134,70 Q140,48 160,36 M186,70 Q180,48 160,36" stroke="#476678" stroke-width="2" fill="none"/>',
-  hat: () => '<ellipse cx="100" cy="40" rx="38" ry="8" fill="#a99870"/><path d="M76,40 Q100,8 124,40 Z" fill="#c2b08a"/><path d="M78,36 Q100,42 122,36" stroke="#8f7f5a" stroke-width="3" fill="none"/>',
-  scarf: () => '<rect x="82" y="76" width="36" height="16" rx="7" fill="#b0584a"/><rect x="104" y="86" width="13" height="36" rx="5" fill="#9b4a3d"/>',
-  gloves: () => '<g fill="#b0584a"><circle cx="58" cy="177" r="9"/><circle cx="142" cy="177" r="9"/></g>',
-  mask: () => '<rect x="84" y="57" width="32" height="19" rx="7" fill="#f4f4f0" stroke="#bdbdb6" stroke-width="1.5"/><path d="M84,62 L78,56 M116,62 L122,56" stroke="#bdbdb6" stroke-width="1.5"/><path d="M90,64 H110 M90,69 H110" stroke="#d6d6cf" stroke-width="1.2"/>',
-  shades: () => '<g fill="#2d2a27"><rect x="82" y="46" width="16" height="11" rx="4"/><rect x="102" y="46" width="16" height="11" rx="4"/></g><path d="M98,50 H102 M82,49 L76,47 M118,49 L124,47" stroke="#2d2a27" stroke-width="2"/>',
-  sunscreen: () => '<rect x="48" y="160" width="20" height="32" rx="5" fill="#f4efe6" stroke="#a89e86" stroke-width="1.5"/><rect x="52" y="151" width="12" height="11" rx="2" fill="#7d8a73"/><circle cx="58" cy="176" r="5" fill="#e6c36a"/>'
+  tee: () => topShirt('#9db4c0', '#86a0ae', 126, false)
+    + '<path d="M68,174 H132" stroke="#86a0ae" stroke-width="1.6" stroke-dasharray="3 2"/><path d="M85,86 Q100,106 115,86" fill="none" stroke="#7f98a6" stroke-width="4.5" stroke-linecap="round"/><path d="M88,98 q12,6 24,0" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="1.4"/><path d="M100,100 V176" stroke="#000" stroke-opacity=".05" stroke-width="1"/>',
+  long: () => topShirt('#c8927c', '#ad7a66', 172, true)
+    + '<path d="M68,174 H132" stroke="#ad7a66" stroke-width="1.6" stroke-dasharray="3 2"/><path d="M85,86 Q100,106 115,86" fill="none" stroke="#a87662" stroke-width="4.5" stroke-linecap="round"/><path d="M60,120 q4,4 0,10 M140,120 q-4,4 0,10" stroke="#ad7a66" stroke-width="1.3" fill="none"/>',
+  tank: () => '<path d="M76,86 L88,86 Q100,106 112,86 L124,86 Q130,100 128,116 L132,176 Q132,182 126,182 H74 Q68,182 68,176 L72,116 Q70,100 76,86 Z" fill="#dcc99f"/>'
+    + shade('M120,90 Q130,100 128,116 L132,176 Q132,182 126,182 H116 Z') + '<path d="M88,86 Q100,106 112,86" fill="none" stroke="#c3b085" stroke-width="2.5"/><path d="M69,176 H131" stroke="#c3b085" stroke-width="1.6" stroke-dasharray="3 2"/>',
+  sweater: () => topShirt('#a7b59a', '#8e9d82', 172, true)
+    + '<path d="M64,170 Q64,182 72,184 H128 Q136,182 136,170 V176 H64Z" fill="#8e9d82"/><path d="M70,176 v6 M76,176 v7 M82,176 v7 M88,176 v7 M94,176 v7 M100,176 v7 M106,176 v7 M112,176 v7 M118,176 v7 M124,176 v7 M130,176 v6" stroke="#000" stroke-opacity=".13" stroke-width="1"/>'
+    + '<path d="M84,80 Q100,74 116,80 L116,92 Q100,100 84,92 Z" fill="#8e9d82"/><path d="M86,86 q14,8 28,0" stroke="#000" stroke-opacity=".12" fill="none" stroke-width="1.2"/><g fill="none" stroke="#8e9d82" stroke-width="2" stroke-linecap="round"><path d="M92,112 q-6,8 0,16 q6,8 0,16 M100,112 q-6,8 0,16 q6,8 0,16 M108,112 q-6,8 0,16 q6,8 0,16"/></g>',
+  jacket: () => pair(`<path d="M64,88 L46,92 Q40,94 40,102 L42,168 Q42,175 49,175 L65,175 L68,104 Z" fill="#5f7487"/><path d="M42,166 H66 V176 H49 Q42,176 42,170Z" fill="#4d6073"/>`)
+    + '<path d="M82,84 Q62,86 62,104 L62,182 Q62,190 70,190 L130,190 Q138,190 138,182 L138,104 Q138,86 118,84 Z" fill="#5f7487"/>'
+    + shade('M126,88 Q138,92 138,106 V182 Q138,190 130,190 H118 Z', .09)
+    + '<path d="M100,98 V190" stroke="#3d4d5e" stroke-width="2.4"/><path d="M97,98 h6 M97,108 h6" stroke="#3d4d5e" stroke-width="1"/><rect x="97" y="108" width="6" height="10" rx="2" fill="#c9ced2"/>'
+    + '<path d="M80,83 L100,106 L120,83 L124,92 L100,112 L76,92 Z" fill="#4d6073"/><path d="M80,83 Q100,94 120,83" fill="none" stroke="#3d4d5e" stroke-width="2"/>'
+    + '<path d="M70,150 h16 M114,150 h16" stroke="#46576a" stroke-width="2.4" stroke-linecap="round"/><path d="M62,184 H138" stroke="#4d6073" stroke-width="4"/>',
+  coat: () => pair(`<path d="M62,86 L42,90 Q36,92 36,100 L38,176 Q38,184 46,184 L62,184 L68,104 Z" fill="#74604f"/><path d="M38,172 H64 V184 H46 Q38,184 38,178Z" fill="#5f4d3f"/>`)
+    + '<path d="M80,80 Q58,82 58,104 L58,214 Q58,222 66,222 H134 Q142,222 142,214 V104 Q142,82 120,80 Z" fill="#74604f"/>'
+    + shade('M128,86 Q142,90 142,106 V214 Q142,222 134,222 H120 Z', .1)
+    + '<path d="M100,104 V222" stroke="#5d4b3d" stroke-width="2"/><path d="M80,78 L100,112 L88,84 Z" fill="#5d4b3d"/><path d="M80,76 L102,118 L74,100 L68,86 Z" fill="#5d4b3d"/><path d="M120,76 L98,118 L126,100 L132,86 Z" fill="#6a5646"/>'
+    + '<g fill="#3f3228"><circle cx="93" cy="140" r="3"/><circle cx="107" cy="140" r="3"/><circle cx="93" cy="168" r="3"/><circle cx="107" cy="168" r="3"/><circle cx="93" cy="196" r="3"/><circle cx="107" cy="196" r="3"/></g>'
+    + '<g fill="none" stroke="#5d4b3d" stroke-width="2"><path d="M66,170 h22 M112,170 h22"/><rect x="66" y="164" width="22" height="3" fill="#5d4b3d" stroke="none"/></g>',
+  raincoat: () => pair(`<path d="M62,86 L46,90 Q40,92 40,100 L42,172 Q42,180 49,180 L64,180 L68,104 Z" fill="#e2b94c"/><path d="M42,168 H66 V180 H49 Q42,180 42,174Z" fill="#c99f33"/>`)
+    + '<path d="M80,82 Q58,84 58,104 L58,216 Q58,222 64,222 H136 Q142,222 142,216 V104 Q142,84 120,82 Z" fill="#e2b94c"/>'
+    + shade('M128,88 Q142,92 142,106 V216 Q142,222 136,222 H122 Z', .1)
+    + '<path d="M100,92 V222" stroke="#c99f33" stroke-width="2.4"/><g fill="#b78c25"><circle cx="106" cy="112" r="3.2"/><circle cx="106" cy="138" r="3.2"/><circle cx="106" cy="164" r="3.2"/><circle cx="106" cy="190" r="3.2"/></g>'
+    + '<g fill="#d3a93b" stroke="#c99f33" stroke-width="2"><path d="M64,166 h26 v26 q-13,5 -26,0 z"/><path d="M110,166 h26 v26 q-13,5 -26,0 z"/></g><path d="M64,172 h26 M110,172 h26" stroke="#c99f33" stroke-width="2"/><path d="M58,206 H142" stroke="#fff" stroke-opacity=".55" stroke-width="3"/>'
+    + '<path d="M70,98 q-6,16 -4,40" stroke="#fff" stroke-opacity=".35" stroke-width="3" fill="none" stroke-linecap="round"/>',
+  shorts: () => '<g fill="#7f8f78"><path d="M73,170 H100.5 L99.5,222 Q99.5,226 95,226 H77 Q72,226 72,221 Z"/><path d="M127,170 H99.5 L100.5,222 Q100.5,226 105,226 H123 Q128,226 128,221 Z"/></g>'
+    + shade('M112,172 H127 L128,221 Q128,226 123,226 H112 Z') + '<path d="M72,216 H100 M100,216 H128" stroke="#6c7a66" stroke-width="5"/><rect x="73" y="166" width="54" height="10" rx="3" fill="#6c7a66"/><path d="M100,170 V190" stroke="#5d6a58" stroke-width="1.6"/><circle cx="100" cy="171" r="1.8" fill="#dcd6c4"/><path d="M78,178 q4,12 14,12" fill="none" stroke="#5d6a58" stroke-width="1.5"/><path d="M122,178 q-4,12 -14,12" fill="none" stroke="#5d6a58" stroke-width="1.5"/>',
+  pants: () => '<g fill="#4d5968"><path d="M73,170 H100.5 L99.5,292 Q99.5,297 95,297 H78 Q72,297 72,291 Z"/><path d="M127,170 H99.5 L100.5,292 Q100.5,297 105,297 H122 Q128,297 128,291 Z"/></g>'
+    + shade('M112,172 H127 L128,291 Q128,297 122,297 H112 Z', .1) + '<path d="M72,284 H99.5 M100.5,284 H128" stroke="#3f4a58" stroke-width="9"/><path d="M72,288 H99.5 M100.5,288 H128" stroke="#fff" stroke-opacity=".12" stroke-width="1"/>'
+    + '<rect x="73" y="166" width="54" height="10" rx="3" fill="#3f4a58"/><path d="M100,170 V192" stroke="#39424f" stroke-width="1.6"/><circle cx="100" cy="171" r="1.8" fill="#c9ced2"/><path d="M78,178 q4,14 14,14" fill="none" stroke="#39424f" stroke-width="1.5"/><path d="M122,178 q-4,14 -14,14" fill="none" stroke="#39424f" stroke-width="1.5"/><path d="M87,200 V282 M113,200 V282" stroke="#000" stroke-opacity=".08" stroke-width="1.4"/><path d="M80,238 q7,3 14,0 M106,238 q7,3 14,0" stroke="#000" stroke-opacity=".1" fill="none" stroke-width="1.2"/>',
+  skirt: () => '<path d="M74,168 H126 L144,236 Q100,250 56,236 Z" fill="#b87b6f"/>'
+    + shade('M112,170 H126 L144,236 Q128,242 114,244 Z', .1) + '<g stroke="#a06a5f" stroke-width="1.8" fill="none"><path d="M84,176 L72,240 M94,176 L88,244 M106,176 L112,244 M116,176 L128,242"/></g><rect x="73" y="165" width="54" height="10" rx="3" fill="#a06a5f"/><circle cx="100" cy="170" r="2.2" fill="#e8d7b8"/><path d="M60,232 Q100,246 140,232" stroke="#fff" stroke-opacity=".25" fill="none" stroke-width="1.4"/>',
+  sneakers: () => {
+    const s = `<path d="M70,291 H98 Q100,291 100,294 V304 Q100,309 95,309 H73 Q67,309 67,303 Q67,295 70,291 Z" fill="#f4efe6" stroke="${INK}" stroke-width="1.5"/><path d="M68,300 Q82,292 99,300" fill="none" stroke="#c9c0ad" stroke-width="1.6"/><path d="M78,293 h12 M77,297 h14" stroke="#9c9486" stroke-width="1.6" stroke-linecap="round"/><rect x="66" y="304" width="35" height="6" rx="3" fill="#d9d1c1" stroke="${INK}" stroke-width="1.3"/><path d="M84,291 L84,296" stroke="#7d93a0" stroke-width="3" stroke-linecap="round"/>`;
+    return pair(s);
+  },
+  sandals: () => pair(`<rect x="69" y="302" width="31" height="7" rx="3.5" fill="#8a6a45"/><rect x="69" y="300" width="31" height="3" rx="1.5" fill="#a98959"/><path d="M75,301 Q85,288 95,301" fill="none" stroke="#b58a58" stroke-width="3.6" stroke-linecap="round"/><path d="M80,301 V294 M90,301 V294" stroke="#b58a58" stroke-width="2.4"/><circle cx="84.5" cy="293" r="1.6" fill="#e6c68e"/>`),
+  slippers: () => pair(`<path d="M67,303 Q67,300 71,300 H98 Q101,300 101,303 V306 Q101,310 97,310 H71 Q67,310 67,306 Z" fill="#5d818f"/><path d="M70,301 Q84,284 98,301 Z" fill="#7aa3b1"/><path d="M76,297 Q84,290 92,297" fill="none" stroke="#fff" stroke-opacity=".4" stroke-width="2" stroke-linecap="round"/>`),
+  boots: () => pair(`<path d="M72,254 H100 V300 Q100,309 94,309 H74 Q67,309 67,302 V298 Q72,296 72,288 Z" fill="#dcb445"/><path d="M72,254 H100 V266 H72 Z" fill="#c99f33"/><path d="M77,272 V300" stroke="#fff" stroke-opacity=".45" stroke-width="3" stroke-linecap="round"/><path d="M66,302 H101 V309 Q101,311 98,311 H69 Q66,311 66,308Z" fill="${INK}"/>`),
+  umbrella: () => '<path d="M160,40 L150,176" stroke="#5a5048" stroke-width="3" fill="none"/><path d="M150,176 q0,11 -9,8" stroke="#5a5048" stroke-width="3.4" fill="none" stroke-linecap="round"/>'
+    + '<path d="M106,72 Q112,24 160,24 Q208,24 214,72 Q198,62 187,72 Q173,62 160,72 Q147,62 133,72 Q122,62 106,72 Z" fill="#5d7f93"/>'
+    + '<path d="M160,24 Q150,40 133,72 Q147,62 160,72 Z" fill="#4e6e81"/><path d="M160,24 Q170,40 187,72 Q173,62 160,72 Z" fill="#4e6e81"/>'
+    + '<path d="M160,24 L106,72 M160,24 L133,72 M160,24 L187,72 M160,24 L214,72" stroke="#3f5c6d" stroke-width="1.4" fill="none"/><path d="M122,48 Q134,34 148,30" stroke="#fff" stroke-opacity=".4" stroke-width="3" fill="none" stroke-linecap="round"/><rect x="158.5" y="14" width="3" height="12" rx="1.5" fill="#5a5048"/>',
+  hat: () => '<ellipse cx="100" cy="41" rx="42" ry="9" fill="#b8a47a"/><ellipse cx="100" cy="39" rx="40" ry="7.5" fill="#cdbb92"/><path d="M76,40 Q76,10 100,10 Q124,10 124,40 Q100,46 76,40 Z" fill="#d6c59d"/><path d="M76,36 Q100,43 124,36 L124,31 Q100,38 76,31 Z" fill="#b0584a"/><g stroke="#b3a176" stroke-width="1.1" opacity=".8" fill="none"><path d="M84,14 Q82,26 80,34 M92,11 Q91,24 90,38 M100,10 V40 M108,11 Q109,24 110,38 M116,14 Q118,26 120,34"/><path d="M62,41 Q100,50 138,41" /></g><path d="M86,17 Q96,10 106,12" stroke="#fff" stroke-opacity=".4" stroke-width="2.4" fill="none" stroke-linecap="round"/>',
+  scarf: () => '<path d="M78,80 Q100,96 122,80 L125,92 Q100,110 75,92 Z" fill="#b0584a"/><path d="M82,84 Q100,97 118,84" fill="none" stroke="#fff" stroke-opacity=".25" stroke-width="1.6"/>'
+    + '<path d="M104,98 L122,94 L124,134 L106,138 Z" fill="#9b4a3d"/><path d="M106,112 L123,108 M106,122 L124,118" stroke="#e6d3b8" stroke-width="3"/><path d="M107,138 v6 M112,137 v7 M117,136 v7 M122,135 v6" stroke="#9b4a3d" stroke-width="2" stroke-linecap="round"/>',
+  gloves: () => pair('<path d="M50,164 H66 V173 H50 Z" fill="#8f453a"/><path d="M53,164 v9 M57,164 v9 M61,164 v9" stroke="#fff" stroke-opacity=".18"/><path d="M50,172 H66 Q69,176 68,183 Q66,191 58,191 Q50,191 48,183 Q47,176 50,172 Z" fill="#b0584a"/><ellipse cx="68" cy="178" rx="3.2" ry="6" transform="rotate(-15 68 178)" fill="#b0584a"/><path d="M54,182 v6 M58,183 v7 M62,182 v6" stroke="#8f453a" stroke-width="1.2" stroke-linecap="round"/>'),
+  mask: () => '<path d="M84,59 Q100,55 116,59 V71 Q100,79 84,71 Z" fill="#f4f4f0" stroke="#bdbdb6" stroke-width="1.5"/><path d="M85,63 Q100,67 115,63 M85,67 Q100,71 115,67" stroke="#d6d6cf" stroke-width="1.4" fill="none"/><path d="M84,61 Q75,58 74,53 M116,61 Q125,58 126,53" stroke="#bdbdb6" stroke-width="1.5" fill="none"/><path d="M90,59 Q100,57 110,59" stroke="#9a9a94" stroke-width="1.2" fill="none"/>',
+  shades: () => '<g fill="#2d2a27"><path d="M81,46 H98 V53 Q98,58 92,58 H87 Q81,58 81,52 Z"/><path d="M119,46 H102 V53 Q102,58 108,58 H113 Q119,58 119,52 Z"/></g><path d="M98,49 Q100,47 102,49 M81,48 L74,46 M119,48 L126,46" stroke="#2d2a27" stroke-width="2" fill="none"/><path d="M84,49 l5,0 M105,49 l5,0" stroke="#fff" stroke-opacity=".5" stroke-width="1.6" stroke-linecap="round"/>',
+  sunscreen: () => '<rect x="48" y="158" width="20" height="34" rx="6" fill="#f4efe6" stroke="#a89e86" stroke-width="1.5"/><rect x="52" y="149" width="12" height="11" rx="2.5" fill="#7d8a73"/><rect x="55" y="145" width="6" height="5" rx="1.5" fill="#6a7660"/><circle cx="58" cy="173" r="5" fill="#e6c36a"/><path d="M58,165 v-2 M58,181 v2 M50.5,173 h-2 M65.5,173 h2" stroke="#e6c36a" stroke-width="1.4" stroke-linecap="round"/><path d="M52,184 h12" stroke="#c9c0ad" stroke-width="1.4"/>'
 };
-const ICON_VB = {tee:'40 80 120 106', long:'40 80 120 106', tank:'40 80 120 106', sweater:'40 80 120 106', jacket:'34 76 132 118', coat:'30 70 140 150', raincoat:'30 78 140 142',
-  shorts:'64 164 72 64', pants:'64 164 72 140', skirt:'54 164 92 86', sneakers:'62 284 76 30', sandals:'62 284 76 30', slippers:'62 284 76 30', boots:'62 254 76 58',
-  umbrella:'100 8 120 184', hat:'58 8 84 44', scarf:'72 70 56 58', gloves:'44 160 112 36', mask:'70 50 60 32', shades:'66 38 68 28', sunscreen:'40 146 36 52'};
+const ICON_VB = {tee:'38 80 124 108', long:'38 80 124 108', tank:'60 80 80 108', sweater:'38 76 124 114', jacket:'32 76 136 120', coat:'28 70 144 156', raincoat:'32 78 136 148',
+  shorts:'64 162 72 70', pants:'64 162 72 142', skirt:'50 160 100 94', sneakers:'60 284 80 30', sandals:'60 284 80 30', slippers:'60 280 80 34', boots:'60 250 80 66',
+  umbrella:'100 8 120 184', hat:'54 6 92 48', scarf:'70 72 60 76', gloves:'44 160 112 36', mask:'66 48 68 34', shades:'66 38 68 28', sunscreen:'38 140 40 58'};
 function iconSVG(id){
-  if(id === 'gloves') return '<svg viewBox="0 0 80 50"><g fill="#b0584a"><path d="M10,40 V20 q0,-6 5,-6 q5,0 5,6 V12 q0,-6 5,-6 q5,0 5,6 V12 q0,-5 5,-5 q5,0 5,5 V40 q0,6 -6,6 H16 q-6,0 -6,-6 Z"/><path d="M45,40 V22 q0,-6 5,-6 q5,0 5,6 V14 q0,-6 5,-6 q5,0 5,6 V40 q0,6 -6,6 H51 q-6,0 -6,-6 Z" opacity=".9"/></g></svg>';
+  if(id === 'gloves'){
+    const g = '<path d="M6,6 H24 V15 H6 Z" fill="#8f453a"/><path d="M10,6 v9 M15,6 v9 M20,6 v9" stroke="#fff" stroke-opacity=".18"/><path d="M6,14 H24 Q28,20 27,30 Q25,42 15,42 Q5,42 3,30 Q2,20 6,14 Z" fill="#b0584a"/><ellipse cx="27" cy="24" rx="4" ry="8" transform="rotate(-18 27 24)" fill="#b0584a"/><path d="M10,30 v9 M15,31 v10 M20,30 v9" stroke="#8f453a" stroke-width="1.4" stroke-linecap="round"/>';
+    return '<svg viewBox="0 0 80 50"><g transform="translate(4,2)">' + g + '</g><g transform="translate(76,2) scale(-1,1)">' + g + '</g></svg>';
+  }
   return '<svg viewBox="' + ICON_VB[id] + '" preserveAspectRatio="xMidYMid meet">' + LAYER[id]() + '</svg>';
+}
+function eyes(mood){
+  const e = (x) => '<circle cx="' + x + '" cy="53" r="3" fill="' + INK + '"/><circle cx="' + (x + 1) + '" cy="52" r="1" fill="#fff"/>';
+  return e(91) + e(109);
 }
 function headSVG(g, mood){
   const hair = g === 'boy'
-    ? '<path d="M73,50 Q72,22 100,21 Q128,22 127,50 Q118,34 100,34 Q82,34 73,50 Z" fill="#3b322c"/>'
-    : '<path d="M71,58 Q68,20 100,20 Q132,20 129,58 L129,76 Q122,78 120,68 L120,46 Q100,38 80,46 L80,68 Q78,78 71,76 Z" fill="#3b322c"/>';
+    ? '<path d="M72,52 Q68,18 100,18 Q132,18 128,52 Q126,40 118,35 Q108,40 96,36 Q84,40 80,36 Q74,42 72,52 Z" fill="#3b322c"/><path d="M82,30 Q92,22 104,24 M96,26 Q108,22 118,30" stroke="#5a4d44" stroke-width="2.2" fill="none" stroke-linecap="round"/>'
+    : '<path d="M70,60 Q64,16 100,16 Q136,16 130,60 L131,80 Q124,84 121,72 L121,48 Q106,38 98,34 Q88,42 79,48 L79,72 Q76,84 69,80 Z" fill="#3b322c"/><path d="M84,28 Q94,20 108,22 M100,30 Q112,26 120,36" stroke="#5a4d44" stroke-width="2.2" fill="none" stroke-linecap="round"/><circle cx="121" cy="34" r="4.5" fill="#b0584a"/><circle cx="121" cy="34" r="1.6" fill="#e6c9b0"/>';
+  const ears = '<circle cx="73" cy="55" r="5.5" fill="' + SK + '"/><circle cx="127" cy="55" r="5.5" fill="' + SK + '"/><circle cx="73.5" cy="55.5" r="2.4" fill="' + SH + '"/><circle cx="126.5" cy="55.5" r="2.4" fill="' + SH + '"/>';
+  const nose = '<path d="M99,57 q-2,3.5 1.2,4.2" stroke="#c9a283" stroke-width="1.5" fill="none" stroke-linecap="round"/>';
+  const brows = '<path d="M86,45 q5,-3 10,-1 M104,44 q5,-2 10,1" stroke="#5a4d44" stroke-width="1.8" fill="none" stroke-linecap="round"/>';
   let face = '';
-  const dots = '<circle cx="91" cy="53" r="2.8" fill="' + INK + '"/><circle cx="109" cy="53" r="2.8" fill="' + INK + '"/>';
-  if(mood === 'happy') face = '<path d="M87,54 Q91,48 95,54 M105,54 Q109,48 113,54" stroke="' + INK + '" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M91,62 Q100,73 109,62 Z" fill="#c9776a" stroke="' + INK + '" stroke-width="1.5" stroke-linejoin="round"/><ellipse cx="84" cy="62" rx="5" ry="3" fill="#e8a79a" opacity=".7"/><ellipse cx="116" cy="62" rx="5" ry="3" fill="#e8a79a" opacity=".7"/>';
-  else if(mood === 'cold') face = dots + '<path d="M91,66 q4,-4 8,0 t8,0" stroke="' + INK + '" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="84" cy="61" rx="5" ry="3" fill="#8fb5d4" opacity=".8"/><ellipse cx="116" cy="61" rx="5" ry="3" fill="#8fb5d4" opacity=".8"/><path d="M62,34 l-7,-4 M60,50 l-9,0 M138,34 l7,-4 M140,50 l9,0" stroke="#7fa2bd" stroke-width="2.4" stroke-linecap="round"/>';
-  else if(mood === 'hot') face = dots + '<ellipse cx="100" cy="65" rx="4" ry="4.5" fill="#c9776a" stroke="' + INK + '" stroke-width="1.5"/><ellipse cx="84" cy="61" rx="5" ry="3" fill="#e08c7c" opacity=".85"/><ellipse cx="116" cy="61" rx="5" ry="3" fill="#e08c7c" opacity=".85"/><path d="M132,36 q-5,8 0,11 q5,-3 0,-11z" fill="#8fc1e3"/><path d="M68,44 q-5,8 0,11 q5,-3 0,-11z" fill="#8fc1e3"/>';
-  else if(mood === 'wet') face = dots + '<path d="M93,67 Q100,61 107,67" stroke="' + INK + '" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M88,47 l8,-3 M112,47 l-8,-3" stroke="' + INK + '" stroke-width="2" stroke-linecap="round"/><g fill="#8fc1e3"><path d="M78,10 q-4,7 0,9 q4,-2 0,-9z"/><path d="M100,2 q-4,7 0,9 q4,-2 0,-9z"/><path d="M122,10 q-4,7 0,9 q4,-2 0,-9z"/></g>';
-  else if(mood === 'sad') face = dots + '<path d="M93,67 Q100,61 107,67" stroke="' + INK + '" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M86,48 l10,-4 M114,48 l-10,-4" stroke="' + INK + '" stroke-width="2" stroke-linecap="round"/>';
-  else face = dots + '<path d="M93,64 Q100,69 107,64" stroke="' + INK + '" stroke-width="2" fill="none" stroke-linecap="round"/>';
-  return '<circle cx="100" cy="52" r="27" fill="' + SK + '"/>' + face + hair;
+  if(mood === 'happy') face = brows + '<path d="M87,54 Q91,48 95,54 M105,54 Q109,48 113,54" stroke="' + INK + '" stroke-width="2.4" fill="none" stroke-linecap="round"/>' + nose + '<path d="M91,63 Q100,74 109,63 Z" fill="#c9776a" stroke="' + INK + '" stroke-width="1.5" stroke-linejoin="round"/><path d="M95,67 Q100,70 105,67" stroke="#f0b4a8" stroke-width="1.6" fill="none"/><ellipse cx="84" cy="62" rx="5" ry="3" fill="#e8a79a" opacity=".7"/><ellipse cx="116" cy="62" rx="5" ry="3" fill="#e8a79a" opacity=".7"/>';
+  else if(mood === 'cold') face = brows + eyes() + nose + '<path d="M91,67 q4,-4 8,0 t8,0" stroke="' + INK + '" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="84" cy="61" rx="5" ry="3" fill="#8fb5d4" opacity=".8"/><ellipse cx="116" cy="61" rx="5" ry="3" fill="#8fb5d4" opacity=".8"/><path d="M62,34 l-7,-4 M60,50 l-9,0 M138,34 l7,-4 M140,50 l9,0" stroke="#7fa2bd" stroke-width="2.4" stroke-linecap="round"/>';
+  else if(mood === 'hot') face = brows + eyes() + nose + '<ellipse cx="100" cy="66" rx="4" ry="4.5" fill="#c9776a" stroke="' + INK + '" stroke-width="1.5"/><ellipse cx="84" cy="61" rx="5" ry="3" fill="#e08c7c" opacity=".85"/><ellipse cx="116" cy="61" rx="5" ry="3" fill="#e08c7c" opacity=".85"/><path d="M134,36 q-5,8 0,11 q5,-3 0,-11z" fill="#8fc1e3"/><path d="M66,44 q-5,8 0,11 q5,-3 0,-11z" fill="#8fc1e3"/>';
+  else if(mood === 'wet') face = eyes() + nose + '<path d="M93,68 Q100,62 107,68" stroke="' + INK + '" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M88,47 l8,-3 M112,47 l-8,-3" stroke="#5a4d44" stroke-width="2" stroke-linecap="round"/><g fill="#8fc1e3"><path d="M78,10 q-4,7 0,9 q4,-2 0,-9z"/><path d="M100,2 q-4,7 0,9 q4,-2 0,-9z"/><path d="M122,10 q-4,7 0,9 q4,-2 0,-9z"/></g>';
+  else if(mood === 'sad') face = eyes() + nose + '<path d="M93,68 Q100,62 107,68" stroke="' + INK + '" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M86,48 l10,-4 M114,48 l-10,-4" stroke="#5a4d44" stroke-width="2" stroke-linecap="round"/>';
+  else face = brows + eyes() + nose + '<path d="M93,65 Q100,70 107,65" stroke="' + INK + '" stroke-width="2" fill="none" stroke-linecap="round"/><ellipse cx="84" cy="62" rx="4.5" ry="2.6" fill="#e8a79a" opacity=".35"/><ellipse cx="116" cy="62" rx="4.5" ry="2.6" fill="#e8a79a" opacity=".35"/>';
+  return ears + '<circle cx="100" cy="52" r="27" fill="' + SK + '"/>' + face + hair;
 }
 function bodySVG(){
-  return '<rect x="92" y="74" width="16" height="16" fill="' + SK + '"/>'
-    + '<rect x="68" y="86" width="64" height="92" rx="16" fill="' + SK + '"/>'
-    + '<rect x="50" y="90" width="16" height="82" rx="8" fill="' + SK + '"/><rect x="134" y="90" width="16" height="82" rx="8" fill="' + SK + '"/>'
-    + '<circle cx="58" cy="176" r="8" fill="' + SK + '"/><circle cx="142" cy="176" r="8" fill="' + SK + '"/>'
-    + '<rect x="76" y="172" width="22" height="124" rx="10" fill="' + SK + '"/><rect x="102" y="172" width="22" height="124" rx="10" fill="' + SK + '"/>'
-    + '<ellipse cx="86" cy="302" rx="14" ry="7" fill="' + SK + '"/><ellipse cx="114" cy="302" rx="14" ry="7" fill="' + SK + '"/>'
-    + '<rect x="75" y="170" width="50" height="16" rx="6" fill="#d2cabb"/>';
+  const arm = '<path d="M68,92 Q52,92 51,106 L52,168 H66 L68,106 Z" fill="' + SK + '"/>'
+    + '<path d="M51,166 H67 Q70,174 69,181 Q68,189 59,189 Q50,189 49,181 Q48,174 51,166 Z" fill="' + SK + '"/><ellipse cx="68" cy="177" rx="3" ry="6" transform="rotate(-15 68 177)" fill="' + SK + '"/><path d="M54,181 v5 M58,182 v6 M62,181 v5" stroke="' + SH + '" stroke-width="1.2" stroke-linecap="round"/>';
+  return '<path d="M92,72 h16 v18 q-8,6 -16,0z" fill="' + SK + '"/><path d="M92,80 q8,8 16,0 v5 q-8,7 -16,0z" fill="' + SH + '"/>'
+    + pair(arm)
+    + '<path d="M84,86 Q66,88 66,104 L66,166 Q66,180 80,180 L120,180 Q134,180 134,166 L134,104 Q134,88 116,86 Z" fill="' + SK + '"/>'
+    + '<path d="M76,172 H98 V291 Q98,298 92,298 H82 Q76,298 76,291 Z" fill="' + SK + '"/><path d="M124,172 H102 V291 Q102,298 108,298 H118 Q124,298 124,291 Z" fill="' + SK + '"/>'
+    + '<path d="M80,232 q8,5 16,0 M104,232 q8,5 16,0" stroke="' + SH + '" stroke-width="1.6" fill="none" stroke-linecap="round"/>'
+    + pair('<path d="M73,297 H98 Q104,297 104,303 Q104,309 96,309 H80 Q71,309 71,303 Q71,297 73,297 Z" fill="' + SK + '"/><path d="M80,305 h0 M86,306 h0 M92,306 h0" stroke="' + SH + '" stroke-width="2.4" stroke-linecap="round"/>')
+    + '<rect x="75" y="170" width="50" height="16" rx="6" fill="#d2cabb"/><path d="M78,176 H122" stroke="#bdb4a3" stroke-width="1.2"/>';
 }
 function charG(g, o, mood){
   const acc = o.acc || [], L = [];
