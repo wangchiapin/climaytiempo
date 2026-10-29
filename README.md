@@ -14,6 +14,7 @@
 - 不連 Firebase、不記錄遊玩次數（目前沒有接 HGPlays）
 - 設定沿用 `hanziGames.settings`（繁簡、西／英／純中文、拼音／注音／兩種／不顯示、語速）
 - 拼音用數字調存放，畫面轉聲調符號與注音（台灣讀音）
+- 分享連結預覽（2026-10-28）：`<head>` 有 Open Graph 標籤，根目錄的 `og.jpg`（1200x630）是貼到 LINE／WhatsApp 時顯示的縮圖；名稱來自 `og:title`「今天穿什麼？ · ¿Qué me pongo hoy?」
 
 ## 上線前要做
 1. GitHub Pages 開在 main 分支根目錄。
