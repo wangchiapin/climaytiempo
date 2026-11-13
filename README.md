@@ -1,5 +1,7 @@
 # 今天穿什麼？ ¿Qué me pongo hoy?
 
+網址：https://wangchiapin.github.io/climaytiempo/
+
 給 Claude：改這個遊戲前先讀這份，再讀 game-kit 的 README。Ben 的規則：先討論、測好、問過才推（他說「推」才推）；用白話繁體中文說明。
 
 聽天氣預報，幫角色選衣服。單一 HTML（`index.html`），給西語學生練天氣、溫度、衣物、「會下雨」「記得…」等說法。
